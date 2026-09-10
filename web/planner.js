@@ -100,7 +100,6 @@ async function loadTrip() {
   renderPlanner();
 }
 
-
 async function loadShareAccess() {
   if (!sharedAccessList || trip?.access !== "owner" || !currentUser) return;
   try {
@@ -162,7 +161,9 @@ function renderPlanner() {
       <div class="activity-list">
         ${activities.length ? activities.map(activity => `
           <div class="activity">
-            <span class="activity-time">${formatTime(activity.time)}</span>
+            ${trip.access === "shared"
+              ? `<span class="activity-time">${formatTime(activity.time)}</span>`
+              : `<input class="activity-time activity-time-input" type="time" value="${escapeHtml(activity.time || "12:00")}" data-time-edit="${activity.id}" aria-label="Edit activity time for ${escapeHtml(activity.title)}">`}
             <span class="activity-main">
               <span class="activity-kind">${activityTypeLabel(activity.type)}</span>
               <strong>${escapeHtml(activity.title)}</strong>
@@ -174,13 +175,33 @@ function renderPlanner() {
 
     day.addEventListener("click", event => {
       if (trip.access === "shared") return;
-      if (event.target.closest("[data-delete]")) return;
+      if (event.target.closest("[data-delete], [data-time-edit]")) return;
       activeDate = date;
       activityForm.hidden = false;
       selectedDayLabel.textContent = formatDate(date,{weekday:"long",month:"long",day:"numeric"});
       resetFormForDate();
       renderPlanner();
       requestAnimationFrame(() => activityForm.scrollIntoView({behavior:"smooth",block:"start"}));
+    });
+
+    day.querySelectorAll("[data-time-edit]").forEach(input => {
+      input.addEventListener("click", event => event.stopPropagation());
+      input.addEventListener("change", async event => {
+        event.stopPropagation();
+        const activity = (trip.activities || []).find(a => String(a.id) === String(input.dataset.timeEdit));
+        if (!activity) return;
+        const previousTime = activity.time;
+        activity.time = input.value || "12:00";
+        input.disabled = true;
+        try {
+          await saveTrip();
+          renderPlanner();
+        } catch (error) {
+          activity.time = previousTime;
+          input.disabled = false;
+          alert(error.message);
+        }
+      });
     });
 
     day.querySelectorAll("[data-delete]").forEach(button => button.addEventListener("click", async event => {
