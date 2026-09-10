@@ -87,7 +87,6 @@ async function loadTrip() {
     const me = await api("/api/auth/me");
     currentUser = me.user || null;
   } catch {}
-
   if (currentUser) {
     const data = await api("/api/trips");
     trip = (data.trips || []).find(item => String(item.id) === String(tripId));
@@ -95,7 +94,6 @@ async function loadTrip() {
     const trips = JSON.parse(localStorage.getItem("travon.trips.v2") || "[]");
     trip = trips.find(item => String(item.id) === String(tripId));
   }
-
   if (!trip) return showError("We couldn't find this itinerary.");
   const readOnly = trip.access === "shared";
   document.body.classList.toggle("read-only-trip", readOnly);
@@ -107,7 +105,6 @@ async function loadTrip() {
   if (trip.access === "owner") await loadShareAccess();
   renderPlanner();
 }
-
 
 async function loadShareAccess() {
   if (!sharedAccessList || trip?.access !== "owner" || !currentUser) return;
@@ -170,7 +167,9 @@ function renderPlanner() {
       <div class="activity-list">
         ${activities.length ? activities.map(activity => `
           <div class="activity">
-            <span class="activity-time">${formatTime(activity.time)}</span>
+            ${trip.access === "shared"
+              ? `<span class="activity-time">${formatTime(activity.time)}</span>`
+              : `<input class="activity-time activity-time-edit" type="time" value="${escapeHtml(activity.time || "12:00")}" data-time-edit="${activity.id}" aria-label="Edit activity time">`}
             <span class="activity-main">
               <span class="activity-kind">${activityTypeLabel(activity.type)}</span>
               <strong>${escapeHtml(activity.title)}</strong>
@@ -182,7 +181,7 @@ function renderPlanner() {
 
     day.addEventListener("click", event => {
       if (trip.access === "shared") return;
-      if (event.target.closest("[data-delete]")) return;
+      if (event.target.closest("[data-delete], [data-time-edit]")) return;
       activeDate = date;
       activityForm.hidden = false;
       selectedDayLabel.textContent = formatDate(date,{weekday:"long",month:"long",day:"numeric"});
@@ -191,13 +190,32 @@ function renderPlanner() {
       requestAnimationFrame(() => activityForm.scrollIntoView({behavior:"smooth",block:"start"}));
     });
 
+    day.querySelectorAll("[data-time-edit]").forEach(input => {
+      input.addEventListener("click", event => event.stopPropagation());
+      input.addEventListener("change", async event => {
+        event.stopPropagation();
+        const activity = (trip.activities || []).find(a => String(a.id) === String(input.dataset.timeEdit));
+        if (!activity || !input.value) return;
+        const previousTime = activity.time;
+        activity.time = input.value;
+        input.disabled = true;
+        try {
+          await saveTrip();
+          renderPlanner();
+        } catch (error) {
+          activity.time = previousTime;
+          input.disabled = false;
+          alert(error.message);
+        }
+      });
+    });
+
     day.querySelectorAll("[data-delete]").forEach(button => button.addEventListener("click", async event => {
       event.stopPropagation();
       trip.activities = (trip.activities || []).filter(a => String(a.id) !== String(button.dataset.delete));
       await saveTrip();
       renderPlanner();
     }));
-
     plannerDays.appendChild(day);
   });
 }
@@ -238,7 +256,6 @@ async function searchPlaces(query) {
         <span class="lookup-placeholder">⌖</span>
         <span><strong>${escapeHtml(result.title)}</strong><small>${escapeHtml(result.address || result.description || "")}</small></span>
       </button>`).join("") : '<div class="lookup-status">No matches found. You can still enter it manually.</div>';
-
     activityLookupResults.querySelectorAll("[data-index]").forEach(button => {
       const selectResult = event => {
         event.preventDefault();
@@ -246,7 +263,6 @@ async function searchPlaces(query) {
         const result = results[Number(button.dataset.index)];
         const selectedType = activityType.value;
         document.querySelector("#activityTitle").value = result.title || "";
-
         if (selectedType === "hotel") {
           document.querySelector("#hotelName").value = result.title || "";
           document.querySelector("#hotelAddress").value = result.address || result.description || "";
@@ -258,12 +274,10 @@ async function searchPlaces(query) {
         } else if (selectedType === "car_rental") {
           document.querySelector("#carPickup").value = result.address || result.description || "";
         }
-
         activityType.value = selectedType;
         updateFields();
         resetLookup();
         activityLookup.blur();
-
         const target = selectedType === "hotel" ? document.querySelector("#hotelFields") : document.querySelector("#activityTitle");
         requestAnimationFrame(() => target?.scrollIntoView({behavior:"smooth",block:"center"}));
       };
@@ -307,7 +321,6 @@ document.querySelector("#cancelEditDates")?.addEventListener("click", closeDateE
 editDatesForm?.addEventListener("submit", async event => {
   event.preventDefault();
   if (!trip || trip.access === "shared") return;
-
   const startDate = editStartDate.value;
   const endDate = editEndDate.value;
   if (!startDate || !endDate || endDate < startDate) {
@@ -318,32 +331,24 @@ editDatesForm?.addEventListener("submit", async event => {
     closeDateEditor();
     return;
   }
-
   const activities = trip.activities || [];
   const removedActivities = activities.filter(activity => activity.date < startDate || activity.date > endDate);
   if (removedActivities.length) {
-    const confirmed = window.confirm(
-      `This date change removes ${removedActivities.length} scheduled ${removedActivities.length === 1 ? "activity" : "activities"}. Continue?`
-    );
+    const confirmed = window.confirm(`This date change removes ${removedActivities.length} scheduled ${removedActivities.length === 1 ? "activity" : "activities"}. Continue?`);
     if (!confirmed) return;
   }
-
   const keptActivities = activities.filter(activity => activity.date >= startDate && activity.date <= endDate);
   saveDatesButton.disabled = true;
   editDatesMessage.textContent = "Saving…";
   try {
     if (currentUser) {
-      await api("/api/trips", {
-        method:"PUT",
-        body:JSON.stringify({ id:trip.id, startDate, endDate, activities:keptActivities })
-      });
+      await api("/api/trips", { method:"PUT", body:JSON.stringify({ id:trip.id, startDate, endDate, activities:keptActivities }) });
     } else {
       const trips = JSON.parse(localStorage.getItem("travon.trips.v2") || "[]");
       const index = trips.findIndex(item => String(item.id) === String(trip.id));
       if (index >= 0) trips[index] = { ...trips[index], startDate, endDate, activities:keptActivities };
       localStorage.setItem("travon.trips.v2", JSON.stringify(trips));
     }
-
     trip.startDate = startDate;
     trip.endDate = endDate;
     trip.activities = keptActivities;
@@ -383,7 +388,6 @@ activityForm.addEventListener("submit",async event => {
   if (type === "hotel") Object.assign(details,{name:document.querySelector("#hotelName").value.trim(),address:document.querySelector("#hotelAddress").value.trim(),confirmation:document.querySelector("#hotelConfirmation").value.trim(),checkin:document.querySelector("#hotelCheckin").value.trim()});
   if (type === "car_rental") Object.assign(details,{company:document.querySelector("#carCompany").value.trim(),pickup:document.querySelector("#carPickup").value.trim(),dropoff:document.querySelector("#carDropoff").value.trim(),confirmation:document.querySelector("#carConfirmation").value.trim()});
   if (type === "restaurant") Object.assign(details,{name:document.querySelector("#restaurantName").value.trim(),address:document.querySelector("#restaurantAddress").value.trim(),reservation:document.querySelector("#restaurantReservation").value.trim()});
-
   trip.activities ||= [];
   trip.activities.push({
     id:crypto.randomUUID(),
