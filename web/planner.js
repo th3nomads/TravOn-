@@ -20,10 +20,15 @@ const editStartDate = document.querySelector("#editStartDate");
 const editEndDate = document.querySelector("#editEndDate");
 const editDatesMessage = document.querySelector("#editDatesMessage");
 const saveDatesButton = document.querySelector("#saveDatesButton");
+const activityFormTitle = activityForm?.querySelector("h2");
+const activitySubmitButton = activityForm?.querySelector('button[type="submit"]');
 let trip = null;
 let currentUser = null;
 let activeDate = null;
 let lookupTimer = null;
+let editingActivityId = null;
+let lastTappedActivityId = null;
+let lastTappedActivityAt = 0;
 
 async function api(path, options = {}) {
   const response = await fetch(path, {
@@ -139,6 +144,58 @@ function showError(message) {
   activityForm.hidden = true;
 }
 
+function openActivityEditor(activity) {
+  if (!activity || !trip || trip.access === "shared") return;
+  editingActivityId = activity.id;
+  activeDate = activity.date;
+  activityForm.hidden = false;
+  activityForm.reset();
+  selectedDayLabel.textContent = formatDate(activity.date,{weekday:"long",month:"long",day:"numeric"});
+  activityType.value = activity.type || "activity";
+  updateFields();
+  resetLookup();
+
+  document.querySelector("#activityTime").value = activity.time || "12:00";
+  document.querySelector("#activityTitle").value = activity.title || "";
+  document.querySelector("#activityNotes").value = activity.notes || "";
+  const d = activity.details || {};
+
+  if (activity.type === "flight") {
+    document.querySelector("#flightAirline").value = d.airline || "";
+    document.querySelector("#flightNumber").value = d.flightNumber || "";
+    document.querySelector("#flightFrom").value = d.from || "";
+    document.querySelector("#flightTo").value = d.to || "";
+    document.querySelector("#flightConfirmation").value = d.confirmation || "";
+  }
+  if (activity.type === "airport") {
+    document.querySelector("#airportName").value = d.name || "";
+    document.querySelector("#airportCode").value = d.code || "";
+    document.querySelector("#airportTerminal").value = d.terminal || "";
+  }
+  if (activity.type === "hotel") {
+    document.querySelector("#hotelName").value = d.name || "";
+    document.querySelector("#hotelAddress").value = d.address || "";
+    document.querySelector("#hotelConfirmation").value = d.confirmation || "";
+    document.querySelector("#hotelCheckin").value = d.checkin || "";
+  }
+  if (activity.type === "car_rental") {
+    document.querySelector("#carCompany").value = d.company || "";
+    document.querySelector("#carPickup").value = d.pickup || "";
+    document.querySelector("#carDropoff").value = d.dropoff || "";
+    document.querySelector("#carConfirmation").value = d.confirmation || "";
+  }
+  if (activity.type === "restaurant") {
+    document.querySelector("#restaurantName").value = d.name || "";
+    document.querySelector("#restaurantAddress").value = d.address || "";
+    document.querySelector("#restaurantReservation").value = d.reservation || "";
+  }
+
+  if (activityFormTitle) activityFormTitle.textContent = "Edit activity";
+  if (activitySubmitButton) activitySubmitButton.textContent = "Save changes";
+  renderPlanner();
+  requestAnimationFrame(() => activityForm.scrollIntoView({behavior:"smooth",block:"start"}));
+}
+
 function renderPlanner() {
   plannerTitle.textContent = trip.title;
   plannerDates.textContent = formatDate(trip.startDate) + " – " + formatDate(trip.endDate);
@@ -162,14 +219,12 @@ function renderPlanner() {
           <span class="day-number">Day ${index+1}</span>
           <h3>${formatDate(date,{weekday:"long",month:"long",day:"numeric"})}</h3>
         </div>
-        <span class="day-add-hint">${trip.access === "shared" ? "View only" : (activeDate === date ? "Adding here" : "Tap to add +")}</span>
+        <span class="day-add-hint">${trip.access === "shared" ? "View only" : (activeDate === date && !editingActivityId ? "Adding here" : "Tap to add +")}</span>
       </div>
       <div class="activity-list">
         ${activities.length ? activities.map(activity => `
-          <div class="activity">
-            ${trip.access === "shared"
-              ? `<span class="activity-time">${formatTime(activity.time)}</span>`
-              : `<input class="activity-time activity-time-edit" type="time" value="${escapeHtml(activity.time || "12:00")}" data-time-edit="${activity.id}" aria-label="Edit activity time">`}
+          <div class="activity${String(editingActivityId) === String(activity.id) ? " editing" : ""}" data-activity-id="${activity.id}" title="Double tap to edit">
+            <span class="activity-time">${formatTime(activity.time)}</span>
             <span class="activity-main">
               <span class="activity-kind">${activityTypeLabel(activity.type)}</span>
               <strong>${escapeHtml(activity.title)}</strong>
@@ -181,7 +236,8 @@ function renderPlanner() {
 
     day.addEventListener("click", event => {
       if (trip.access === "shared") return;
-      if (event.target.closest("[data-delete], [data-time-edit]")) return;
+      if (event.target.closest("[data-delete], [data-activity-id]")) return;
+      editingActivityId = null;
       activeDate = date;
       activityForm.hidden = false;
       selectedDayLabel.textContent = formatDate(date,{weekday:"long",month:"long",day:"numeric"});
@@ -190,29 +246,39 @@ function renderPlanner() {
       requestAnimationFrame(() => activityForm.scrollIntoView({behavior:"smooth",block:"start"}));
     });
 
-    day.querySelectorAll("[data-time-edit]").forEach(input => {
-      input.addEventListener("click", event => event.stopPropagation());
-      input.addEventListener("change", async event => {
+    day.querySelectorAll("[data-activity-id]").forEach(card => {
+      const editThisActivity = event => {
+        if (trip.access === "shared" || event.target.closest("[data-delete]")) return;
+        event.preventDefault();
         event.stopPropagation();
-        const activity = (trip.activities || []).find(a => String(a.id) === String(input.dataset.timeEdit));
-        if (!activity || !input.value) return;
-        const previousTime = activity.time;
-        activity.time = input.value;
-        input.disabled = true;
-        try {
-          await saveTrip();
-          renderPlanner();
-        } catch (error) {
-          activity.time = previousTime;
-          input.disabled = false;
-          alert(error.message);
+        const activity = (trip.activities || []).find(a => String(a.id) === String(card.dataset.activityId));
+        openActivityEditor(activity);
+      };
+
+      card.addEventListener("dblclick", editThisActivity);
+      card.addEventListener("touchend", event => {
+        if (event.target.closest("[data-delete]")) return;
+        const now = Date.now();
+        const id = card.dataset.activityId;
+        if (lastTappedActivityId === id && now - lastTappedActivityAt < 420) {
+          lastTappedActivityAt = 0;
+          lastTappedActivityId = null;
+          editThisActivity(event);
+          return;
         }
-      });
+        lastTappedActivityId = id;
+        lastTappedActivityAt = now;
+      }, {passive:false});
     });
 
     day.querySelectorAll("[data-delete]").forEach(button => button.addEventListener("click", async event => {
       event.stopPropagation();
-      trip.activities = (trip.activities || []).filter(a => String(a.id) !== String(button.dataset.delete));
+      const deletingId = button.dataset.delete;
+      trip.activities = (trip.activities || []).filter(a => String(a.id) !== String(deletingId));
+      if (String(editingActivityId) === String(deletingId)) {
+        editingActivityId = null;
+        activityForm.hidden = true;
+      }
       await saveTrip();
       renderPlanner();
     }));
@@ -229,10 +295,13 @@ function resetLookup() {
 
 function resetFormForDate() {
   const date = activeDate;
+  editingActivityId = null;
   activityForm.reset();
   activeDate = date;
   activityType.value = "activity";
   selectedDayLabel.textContent = formatDate(activeDate,{weekday:"long",month:"long",day:"numeric"});
+  if (activityFormTitle) activityFormTitle.textContent = "Add to itinerary";
+  if (activitySubmitButton) activitySubmitButton.textContent = "Add to itinerary";
   updateFields();
   resetLookup();
 }
@@ -354,6 +423,7 @@ editDatesForm?.addEventListener("submit", async event => {
     trip.activities = keptActivities;
     if (activeDate && (activeDate < startDate || activeDate > endDate)) {
       activeDate = null;
+      editingActivityId = null;
       activityForm.hidden = true;
     }
     closeDateEditor();
@@ -388,16 +458,24 @@ activityForm.addEventListener("submit",async event => {
   if (type === "hotel") Object.assign(details,{name:document.querySelector("#hotelName").value.trim(),address:document.querySelector("#hotelAddress").value.trim(),confirmation:document.querySelector("#hotelConfirmation").value.trim(),checkin:document.querySelector("#hotelCheckin").value.trim()});
   if (type === "car_rental") Object.assign(details,{company:document.querySelector("#carCompany").value.trim(),pickup:document.querySelector("#carPickup").value.trim(),dropoff:document.querySelector("#carDropoff").value.trim(),confirmation:document.querySelector("#carConfirmation").value.trim()});
   if (type === "restaurant") Object.assign(details,{name:document.querySelector("#restaurantName").value.trim(),address:document.querySelector("#restaurantAddress").value.trim(),reservation:document.querySelector("#restaurantReservation").value.trim()});
-  trip.activities ||= [];
-  trip.activities.push({
-    id:crypto.randomUUID(),
+
+  const updatedActivity = {
     date:activeDate,
     time:document.querySelector("#activityTime").value || "12:00",
     type,
     title:document.querySelector("#activityTitle").value.trim(),
     details,
     notes:document.querySelector("#activityNotes").value.trim()
-  });
+  };
+
+  trip.activities ||= [];
+  if (editingActivityId) {
+    const index = trip.activities.findIndex(a => String(a.id) === String(editingActivityId));
+    if (index >= 0) trip.activities[index] = { ...trip.activities[index], ...updatedActivity };
+  } else {
+    trip.activities.push({ id:crypto.randomUUID(), ...updatedActivity });
+  }
+
   await saveTrip();
   resetFormForDate();
   renderPlanner();
