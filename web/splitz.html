@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="description" content="Split trip expenses with friends using TravOn Splitz." />
+  <title>Splitz · TravOn</title>
+  <link rel="stylesheet" href="./styles.css?v=20260909-sharedsplitz1" />
+</head>
+<body class="splitz-document">
+  <header class="site-header splitz-site-header">
+    <a class="brand" href="./index.html" aria-label="TravOn home">
+      <svg class="travon-logo" viewBox="0 0 120 120" role="img" aria-label="TravOn logo">
+        <circle cx="60" cy="60" r="56" fill="#dff8f8" stroke="#18b5bd" stroke-width="4"/>
+        <circle cx="92" cy="25" r="9" fill="#ffd75a"/>
+        <path d="M15 57 Q35 36 55 52 T105 49 V76 H15Z" fill="#9edfe1"/>
+        <path d="M13 71 Q30 57 46 66 Q62 77 77 61 Q91 50 108 63 V80 H13Z" fill="#6ec7cb"/>
+        <rect x="10" y="78" width="100" height="8" rx="4" fill="#4f5966"/>
+        <g transform="translate(33 47)"><rect x="8" y="9" width="43" height="18" rx="7" fill="#ef4740"/><path d="M16 9 L24 0 H38 L46 9Z" fill="#ef4740"/><circle cx="18" cy="28" r="7" fill="#24313f"/><circle cx="43" cy="28" r="7" fill="#24313f"/></g>
+        <text x="60" y="103" text-anchor="middle" font-size="19" font-weight="800" font-family="Arial, sans-serif" fill="#111827">TravOn</text>
+      </svg>
+    </a>
+    <a class="planner-back-link" href="./index.html">← Home</a>
+  </header>
+
+  <main class="standalone-splitz">
+    <section class="section splitz-section" id="splitz">
+      <div class="section-row section-row-stack">
+        <div>
+          <span class="eyebrow">GROUP EXPENSES</span>
+          <h1>Splitz</h1>
+          <p class="section-intro">Split trip costs with friends and instantly see who owes whom.</p>
+        </div>
+      </div>
+
+      <div class="splitz-shell">
+        <div class="splitz-group-bar">
+          <label>Itinerary<select id="splitzTripSelect"></select></label>
+          <div id="splitzAccessNote" class="splitz-access-note"></div>
+        </div>
+
+        <div id="splitzEmpty" class="empty-state splitz-empty">
+          <div class="empty-icon">💸</div><h3>Choose an itinerary</h3>
+          <p>Splitz finances are attached to each itinerary and shared with everyone who has access to that trip.</p>
+        </div>
+
+        <div id="splitzWorkspace" class="splitz-workspace" hidden>
+          <article class="splitz-card">
+            <span class="eyebrow">PEOPLE</span><h3>Who’s in this group?</h3>
+            <form id="splitzPersonForm" class="splitz-inline-form">
+              <input id="splitzPersonName" maxlength="40" placeholder="Friend's name" aria-label="Friend's name" required />
+              <button class="button button-secondary" type="submit">Add friend</button>
+            </form>
+            <div id="splitzPeople" class="splitz-people"></div>
+          </article>
+          <article class="splitz-card">
+            <span class="eyebrow">ADD EXPENSE</span><h3>Who paid?</h3>
+            <form id="splitzExpenseForm" class="splitz-expense-form">
+              <label>Description<input id="splitzExpenseTitle" maxlength="70" placeholder="Dinner, hotel, gas..." required /></label>
+              <div class="two-col">
+                <label>Amount<input id="splitzExpenseAmount" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="0.00" required /></label>
+                <label>Paid by<select id="splitzPaidBy" required></select></label>
+              </div>
+              <p class="form-note">Expenses are split equally between everyone in the group.</p>
+              <button class="button button-primary" type="submit">Add expense</button>
+            </form>
+          </article>
+          <article class="splitz-card splitz-summary-card">
+            <span class="eyebrow">BALANCES</span><h3>Settle up</h3>
+            <div id="splitzBalances" class="splitz-balances"></div>
+            <div id="splitzSettlements" class="splitz-settlements"></div>
+          </article>
+          <article class="splitz-card">
+            <span class="eyebrow">EXPENSES</span><h3>Group spending</h3>
+            <div id="splitzExpenses" class="splitz-expenses"></div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Bottom navigation">
+    <a href="./index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"/></svg><small>Home</small></a>
+    <a href="./splitz.html" class="active"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10ZM4 21v-2.2C4 15.6 6.7 14 10 14h4c3.3 0 6 1.6 6 4.8V21h-2v-2.2c0-1.8-1.7-2.8-4-2.8h-4c-2.3 0-4 1-4 2.8V21H4Z"/></svg><small>Splitz</small></a>
+    <a href="./index.html#itineraries"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h2v3h6V2h2v3h3v17H4V5h3V2Zm11 8H6v10h12V10Z"/></svg><small>Itineraries</small></a>
+    <a href="./index.html#friends"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm8-1a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 21v-2c0-4 2.7-6 6-6s6 2 6 6v2H2Z"/></svg><small>Friends</small></a>
+  </nav>
+  <script src="./splitz.js?v=20260909-sharedsplitz1"></script>
+</body>
+</html>
