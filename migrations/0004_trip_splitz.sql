@@ -1,0 +1,1 @@
+ALTER TABLE trips ADD COLUMN splitz_json TEXT NOT NULL DEFAULT '{"people":[],"expenses":[]}';
