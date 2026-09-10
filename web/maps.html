@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="description" content="View your TravOn itinerary places on a map." />
+  <title>Maps · TravOn</title>
+  <link rel="stylesheet" href="./styles.css?v=20260910-maps1" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+  <style>
+    .maps-document{background:#f7fafb}.maps-site-header{position:sticky}.standalone-maps{padding:16px 16px 96px}.maps-shell{max-width:1100px;margin:0 auto}.maps-heading{margin:4px 0 14px}.maps-heading h1{margin:0;font-size:2rem;letter-spacing:-.04em}.maps-heading p{margin:6px 0 0;color:#667085}.maps-controls{display:grid;gap:10px;margin-bottom:14px}.maps-controls label{display:grid;gap:6px;font-weight:800}.maps-controls select{width:100%;min-height:50px;padding:10px 14px;border:1px solid #d9e0e5;border-radius:14px;background:#fff}.trip-map{height:min(62vh,600px);min-height:390px;border:1px solid #dfe5e8;border-radius:22px;overflow:hidden;background:#eaf3f4;box-shadow:0 8px 24px rgba(15,23,42,.08)}.map-status{margin:12px 0 0;padding:12px 14px;border-radius:14px;background:#fff;border:1px solid #e7ebef;color:#667085;line-height:1.45}.map-legend{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.map-legend span{display:inline-flex;align-items:center;gap:6px;padding:6px 9px;border-radius:999px;background:#fff;border:1px solid #e7ebef;color:#475467;font-size:.78rem;font-weight:700}.map-dot{width:10px;height:10px;border-radius:50%;background:#18b5bd}.leaflet-popup-content{margin:12px 14px;line-height:1.35}.leaflet-popup-content strong{font-size:.98rem}.leaflet-popup-content small{display:block;margin-top:4px;color:#667085}.map-popup-link{display:inline-block;margin-top:8px;color:#0b8d97;font-weight:800;text-decoration:none}.maps-empty{padding:26px;border:1px solid #e7ebef;border-radius:20px;background:#fff;color:#667085}.bottom-nav.five-tabs{grid-template-columns:repeat(5,1fr)}.bottom-nav.five-tabs a:first-child{color:#667085}.bottom-nav.five-tabs a.active{color:var(--teal-dark)}.bottom-nav svg{width:23px;height:23px;fill:currentColor}.maps-nav-link.active{color:var(--teal-dark)!important}@media(min-width:1200px){.standalone-maps{padding:32px 6vw}.maps-controls{max-width:420px}.trip-map{height:650px}.desktop-nav .maps-active{color:var(--teal-dark)}}
+  </style>
+</head>
+<body class="maps-document">
+  <header class="site-header maps-site-header">
+    <a class="brand" href="./index.html" aria-label="TravOn home">
+      <img class="travon-logo" src="./travon-share-card.PNG?v=20260910-logo1" alt="TravOn — Explore the world with a tap!" style="object-fit:contain;display:block;" />
+    </a>
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <a href="./index.html#home">Home</a>
+      <a href="./splitz.html">Splitz</a>
+      <a href="./index.html#itineraries">Itineraries</a>
+      <a class="maps-active" href="./maps.html">Maps</a>
+      <a href="./index.html#friends">Friends</a>
+    </nav>
+    <a class="planner-back-link" href="./index.html#itineraries">← My Trips</a>
+  </header>
+
+  <main class="standalone-maps">
+    <section class="maps-shell">
+      <div class="maps-heading">
+        <span class="eyebrow">TRIP MAP</span>
+        <h1>Maps</h1>
+        <p>See your itinerary places together on one map.</p>
+      </div>
+      <div class="maps-controls">
+        <label>Itinerary
+          <select id="mapTripSelect"><option value="">Loading trips…</option></select>
+        </label>
+      </div>
+      <div class="map-legend" aria-label="Map legend">
+        <span><i class="map-dot"></i> Itinerary place</span>
+      </div>
+      <div id="tripMap" class="trip-map" aria-label="Map of itinerary locations"></div>
+      <div id="mapStatus" class="map-status">Choose a trip to display its places.</div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav five-tabs" aria-label="Bottom navigation">
+    <a href="./index.html#home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"/></svg><small>Home</small></a>
+    <a href="./splitz.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10ZM4 21v-2.2C4 15.6 6.7 14 10 14h4c3.3 0 6 1.6 6 4.8V21h-2v-2.2c0-1.8-1.7-2.8-4-2.8h-4c-2.3 0-4 1-4 2.8V21H4Z"/></svg><small>Splitz</small></a>
+    <a href="./index.html#itineraries"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h2v3h6V2h2v3h3v17H4V5h3V2Zm11 8H6v10h12V10Z"/></svg><small>Trips</small></a>
+    <a href="./maps.html" class="active maps-nav-link"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 4-6-2-6 2v18l6-2 6 2 6-2V2l-6 2Zm-5 .2 4 1.33v14.27l-4-1.33V4.2Zm-5 1.24 3-1v14.12l-3 1V5.44Zm14 13.12-3 1V5.44l3-1v14.12Z"/></svg><small>Maps</small></a>
+    <a href="./index.html#friends"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm8-1a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 21v-2c0-4 2.7-6 6-6s6 2 6 6v2H2Z"/></svg><small>Friends</small></a>
+  </nav>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="./maps.js?v=20260910-maps1"></script>
+</body>
+</html>
