@@ -1,63 +1,40 @@
-/* Compact editable itinerary time control.
-   Loaded after styles.css so it only adjusts saved activity rows. */
-.activity .activity-time-edit{
-  box-sizing:border-box !important;
-  width:108px !important;
-  min-width:108px !important;
-  max-width:108px !important;
-  height:40px !important;
-  min-height:40px !important;
+/* Saved itinerary activity layout overrides. */
+
+/* Keep the delete control out of the content flow so activity details get
+   the full width of the card. */
+.planner-document .activity{
+  position:relative !important;
+  grid-template-columns:auto minmax(0,1fr) !important;
+  column-gap:10px !important;
+  align-items:start !important;
+  padding-right:42px !important;
+}
+
+.planner-document .activity-main{
+  min-width:0 !important;
+}
+
+.planner-document .activity-main strong,
+.planner-document .activity-details{
+  overflow-wrap:anywhere;
+}
+
+.planner-document .activity > button[data-delete]{
+  position:absolute !important;
+  top:8px !important;
+  right:8px !important;
   margin:0 !important;
-  padding:6px 8px !important;
-  border:1px solid #e7ebef !important;
-  border-radius:999px !important;
-  background:#eef8f8 !important;
-  color:var(--teal-dark) !important;
-  font-size:.92rem !important;
-  line-height:1 !important;
-  font-weight:900 !important;
-  text-align:center !important;
-  box-shadow:none !important;
-  appearance:none;
-  -webkit-appearance:none;
-}
-
-.activity .activity-time-edit:focus{
-  outline:none;
-  border-color:#7bd4d8 !important;
-  box-shadow:0 0 0 3px rgba(24,181,189,.12) !important;
-}
-
-/* Keep the time in its own lane so it can never cover the title/details. */
-@media(max-width:1199px){
-  .planner-document .activity{
-    grid-template-columns:112px minmax(0,1fr) auto !important;
-    column-gap:10px !important;
-    align-items:center !important;
-  }
-
-  .planner-document .activity-main{
-    min-width:0 !important;
-  }
-
-  .planner-document .activity-main strong,
-  .planner-document .activity-details{
-    overflow-wrap:anywhere;
-  }
+  z-index:2;
 }
 
 @media(max-width:390px){
-  .activity .activity-time-edit{
-    width:102px !important;
-    min-width:102px !important;
-    max-width:102px !important;
-    font-size:.86rem !important;
-    padding-left:6px !important;
-    padding-right:6px !important;
+  .planner-document .activity{
+    column-gap:8px !important;
+    padding-right:38px !important;
   }
 
-  .planner-document .activity{
-    grid-template-columns:104px minmax(0,1fr) auto !important;
-    column-gap:8px !important;
+  .planner-document .activity > button[data-delete]{
+    top:6px !important;
+    right:6px !important;
   }
 }
