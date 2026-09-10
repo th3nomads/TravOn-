@@ -1,0 +1,12 @@
+{
+  "name": "travon",
+  "compatibility_date": "2026-09-08",
+  "pages_build_output_dir": "./web",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "travon-db",
+      "database_id": "29cb00bc-a86c-4101-8f57-14de0b77a300"
+    }
+  ]
+}
