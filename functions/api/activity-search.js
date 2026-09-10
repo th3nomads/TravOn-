@@ -3,7 +3,7 @@ function json(data, status = 200) {
     status,
     headers: {
       "content-type": "application/json; charset=utf-8",
-      "cache-control": "public, max-age=21600"
+      "cache-control": "no-store"
     }
   });
 }
@@ -32,31 +32,18 @@ export async function onRequestGet({ request, env }) {
     const url = new URL(request.url);
     const q = clean(url.searchParams.get("q"));
     const type = clean(url.searchParams.get("type"));
-    const context = clean(url.searchParams.get("context"));
 
     if (q.length < 2 || q.length > 120) {
       return json({ results: [] });
     }
 
-    let searchText = q;
-    if (context && !searchText.toLowerCase().includes(context.toLowerCase())) {
-      searchText += ", " + context;
-    }
-
     const params = new URLSearchParams({
-      text: searchText,
+      text: q,
       format: "json",
       lang: "en",
       limit: "20",
-      bias: "countrycode:none",
       apiKey: env.GEOAPIFY_API_KEY
     });
-
-    const geographicText = (q + " " + context).toLowerCase();
-    if (/canada|montreal|montréal|pointe[ -]claire|quebec|québec/.test(geographicText)) {
-      params.set("filter", "countrycode:ca");
-      params.set("bias", "countrycode:ca");
-    }
 
     const response = await fetch("https://api.geoapify.com/v1/geocode/search?" + params.toString());
 
@@ -88,9 +75,8 @@ export async function onRequestGet({ request, env }) {
       const tokenScore = queryTokens.reduce((score, token) => score + (haystack.includes(token) ? 1 : 0), 0);
       const exactNameBonus = normalizedName === normalizedQuery ? 100 : (normalizedName.includes(normalizedQuery) || normalizedQuery.includes(normalizedName) ? 30 : 0);
       const hotelBonus = type === "hotel" && /hotel|doubletree|hilton/.test(haystack) ? 8 : 0;
-      const pointeClaireBonus = /pointe[ -]claire/.test(q.toLowerCase()) && /pointe[ -]claire/.test(haystack) ? 20 : 0;
       const confidenceBonus = Number(place.rank?.confidence || 0) * 5;
-      const matchScore = tokenScore + exactNameBonus + hotelBonus + pointeClaireBonus + confidenceBonus;
+      const matchScore = tokenScore + exactNameBonus + hotelBonus + confidenceBonus;
 
       return {
         id: place.place_id || String(index),
