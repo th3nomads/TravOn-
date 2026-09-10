@@ -100,21 +100,10 @@
       </div>
     </section>
 
-    <section class="search-section" id="locations">
-      <div class="search-shell">
-        <span class="search-icon" aria-hidden="true">⌕</span>
-        <input id="placeSearch" type="search" placeholder="Search destinations, cities, or places..." aria-label="Search destinations" />
-      </div>
-    </section>
-
-    <section class="featured-section">
-      <div class="section-row">
-        <h2>Featured Destinations</h2>
-        <a class="see-all" href="#locations">See all ›</a>
-      </div>
-      <div class="destination-list" id="placeGrid"></div>
-    </section>
-
+    <div hidden aria-hidden="true">
+      <input id="placeSearch" type="search" />
+      <div id="placeGrid"></div>
+    </div>
 
     <section class="section itineraries-section" id="itineraries">
       <div class="section-row section-row-stack">
