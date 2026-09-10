@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="description" content="TravOn — plan trips, organize itineraries, save places, and travel together." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://travon.pages.dev/" />
+  <meta property="og:title" content="TravOn — Plan together. Travel better." />
+  <meta property="og:description" content="Create itineraries, collaborate with friends, split expenses, and explore more." />
+  <meta property="og:image" content="https://travon.pages.dev/travon-share-card.PNG" />
+  <meta property="og:image:width" content="1536" />
+  <meta property="og:image:height" content="1024" />
+  <meta property="og:image:alt" content="TravOn — Plan together. Travel better." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="TravOn — Plan together. Travel better." />
+  <meta name="twitter:description" content="Create itineraries, collaborate with friends, split expenses, and explore more." />
+  <meta name="twitter:image" content="https://travon.pages.dev/travon-share-card.PNG" />
+  <title>TravOn</title>
+  <link rel="stylesheet" href="./styles.css?v=20260909-splitzpage1" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#home" aria-label="TravOn home">
+      <svg class="travon-logo" viewBox="0 0 120 120" role="img" aria-label="TravOn logo">
+        <circle cx="60" cy="60" r="56" fill="#dff8f8" stroke="#18b5bd" stroke-width="4"/>
+        <circle cx="92" cy="25" r="9" fill="#ffd75a"/>
+        <path d="M15 57 Q35 36 55 52 T105 49 V76 H15Z" fill="#9edfe1"/>
+        <path d="M13 71 Q30 57 46 66 Q62 77 77 61 Q91 50 108 63 V80 H13Z" fill="#6ec7cb"/>
+        <rect x="10" y="78" width="100" height="8" rx="4" fill="#4f5966"/>
+        <rect x="18" y="81" width="16" height="2.5" rx="1.2" fill="#fff"/>
+        <rect x="45" y="81" width="16" height="2.5" rx="1.2" fill="#fff"/>
+        <rect x="72" y="81" width="16" height="2.5" rx="1.2" fill="#fff"/>
+        <g transform="translate(33 47)">
+          <rect x="8" y="9" width="43" height="18" rx="7" fill="#ef4740"/>
+          <path d="M16 9 L24 0 H38 L46 9Z" fill="#ef4740"/>
+          <rect x="23" y="3" width="11" height="8" rx="2" fill="#24313f"/>
+          <circle cx="18" cy="28" r="7" fill="#24313f"/>
+          <circle cx="43" cy="28" r="7" fill="#24313f"/>
+          <circle cx="18" cy="28" r="3" fill="#f5f7f9"/>
+          <circle cx="43" cy="28" r="3" fill="#f5f7f9"/>
+          <rect x="24" y="-5" width="15" height="5" rx="1.5" fill="#2d633d"/>
+        </g>
+        <text x="60" y="103" text-anchor="middle" font-size="19" font-weight="800" font-family="Arial, sans-serif" fill="#111827">TravOn</text>
+      </svg>
+    </a>
+
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <a href="#home">Home</a>
+      <a href="./splitz.html">Splitz</a>
+      <a href="#itineraries">Itineraries</a>
+      <a href="#friends">Friends</a>
+    </nav>
+
+    <div class="desktop-account-actions">
+      <button class="button button-secondary" id="loginButton">Log in</button>
+      <button class="button button-primary" id="signupButton">Create account</button>
+    </div>
+
+    <button class="menu-button" id="menuButton" type="button" aria-label="Open navigation">☰</button>
+    <nav class="nav mobile-menu" aria-label="Mobile navigation">
+      <a href="#home">Home</a>
+      <a href="./splitz.html">Splitz</a>
+      <a href="#itineraries">Itineraries</a>
+      <a href="#friends">Friends</a>
+    </nav>
+  </header>
+
+  <main id="app">
+    <section class="hero" id="home">
+      <div class="hero-content">
+        <h1>Welcome to TravOn!</h1>
+        <div class="logged-in-greeting" id="loggedInGreeting" hidden>
+          <span>Signed in as</span>
+          <strong id="loggedInName"></strong>
+        </div>
+        <h2>Explore the world with a tap!</h2>
+        <p>Discover amazing places, plan your trips, and save your favorite destinations.</p>
+
+        <div class="hero-account-actions">
+          <button class="button button-primary hero-primary" id="heroSignupButton">
+            <span>Create Account</span><span aria-hidden="true">→</span>
+          </button>
+          <button class="button button-secondary hero-login" id="heroLoginButton">Log In</button>
+        </div>
+        <button class="visually-hidden" id="heroPlanButton" type="button">Plan a trip</button>
+      </div>
+
+      <div class="hero-art" aria-hidden="true">
+        <svg viewBox="0 0 420 300">
+          <circle cx="355" cy="50" r="23" fill="#ffd65c"/>
+          <g fill="#fff" opacity=".94">
+            <ellipse cx="310" cy="92" rx="37" ry="15"/>
+            <ellipse cx="343" cy="94" rx="23" ry="11"/>
+            <ellipse cx="260" cy="62" rx="28" ry="12"/>
+          </g>
+          <path d="M95 190 L190 95 L260 162 L310 120 L405 206 Z" fill="#8cd3d6"/>
+          <path d="M140 200 L225 118 L290 182 L335 145 L420 216 Z" fill="#6fc2c7"/>
+          <path d="M0 214 Q60 190 115 215 T230 214 T420 207 V300 H0Z" fill="#bfe879"/>
+          <path d="M115 240 Q225 205 420 235 V300 H90Z" fill="#4f5966"/>
+          <path d="M135 246 Q240 219 400 244" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-dasharray="23 18" fill="none"/>
+          <g transform="translate(250 166)">
+            <rect x="18" y="25" width="95" height="41" rx="14" fill="#ef4740"/>
+            <path d="M34 25 L53 3 H82 L99 25Z" fill="#ef4740"/>
+            <rect x="54" y="9" width="23" height="19" rx="3" fill="#24313f"/>
+            <circle cx="42" cy="68" r="14" fill="#24313f"/>
+            <circle cx="91" cy="68" r="14" fill="#24313f"/>
+            <circle cx="42" cy="68" r="6" fill="#f5f7f9"/>
+            <circle cx="91" cy="68" r="6" fill="#f5f7f9"/>
+            <rect x="53" y="-7" width="32" height="10" rx="2" fill="#2d633d"/>
+            <rect x="59" y="-16" width="20" height="9" rx="2" fill="#315b38"/>
+          </g>
+          <g fill="#7db251">
+            <ellipse cx="66" cy="200" rx="18" ry="45"/>
+            <ellipse cx="102" cy="210" rx="13" ry="35"/>
+            <ellipse cx="387" cy="203" rx="18" ry="48"/>
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <section class="search-section" id="locations">
+      <div class="search-shell">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <input id="placeSearch" type="search" placeholder="Search destinations, cities, or places..." aria-label="Search destinations" />
+      </div>
+    </section>
+
+    <section class="featured-section">
+      <div class="section-row">
+        <h2>Featured Destinations</h2>
+        <a class="see-all" href="#locations">See all ›</a>
+      </div>
+      <div class="destination-list" id="placeGrid"></div>
+    </section>
+
+
+    <section class="section itineraries-section" id="itineraries">
+      <div class="section-row section-row-stack">
+        <div>
+          <span class="eyebrow">MY TRIPS</span>
+          <h2>Your itineraries</h2>
+        </div>
+        <button class="button button-primary" id="newTripButton">+ New itinerary</button>
+      </div>
+      <div class="trip-list" id="tripGrid"></div>
+    </section>
+
+    <section class="section friends-section" id="friends">
+      <span class="eyebrow">FRIENDS</span>
+      <h2>Plan together</h2>
+      <div id="friendsGrid" class="friends-grid">
+        <div class="empty-state">
+          <div class="empty-icon">👥</div>
+          <h3>No shared trips yet</h3>
+          <p>People you share itineraries with will appear here.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="authDialog">
+    <form method="dialog" id="authForm" class="modal-form">
+      <div class="dialog-heading">
+        <div>
+          <div class="auth-brand">
+            <svg class="mini-logo" viewBox="0 0 64 64" aria-hidden="true">
+              <circle cx="32" cy="32" r="29" fill="#dff8f8" stroke="#18b5bd" stroke-width="3"/>
+              <path d="M8 36 Q22 22 34 32 T58 31 V45 H8Z" fill="#75cdd1"/>
+              <rect x="8" y="44" width="50" height="5" rx="2" fill="#4f5966"/>
+              <rect x="22" y="31" width="24" height="10" rx="4" fill="#ef4740"/>
+              <circle cx="27" cy="42" r="4" fill="#24313f"/>
+              <circle cx="42" cy="42" r="4" fill="#24313f"/>
+            </svg>
+            <strong>TravOn</strong>
+          </div>
+          <span class="eyebrow" id="authEyebrow">WELCOME TO TRAVON</span>
+          <h2 id="authTitle">Create your account</h2>
+        </div>
+        <button class="icon-button" id="closeAuth" type="button" aria-label="Close">×</button>
+      </div>
+      <p class="modal-copy" id="authCopy">Name, email, and password are required.</p>
+      <label id="authNameLabel" class="auth-name-field">
+        Name
+        <input id="authName" type="text" autocomplete="name" maxlength="80" placeholder="Your name" />
+      </label>
+      <label>
+        Email
+        <input id="authEmail" type="email" autocomplete="email" required placeholder="you@example.com" />
+      </label>
+      <label>
+        Password
+        <input id="authPassword" type="password" autocomplete="current-password" minlength="8" required placeholder="At least 8 characters" />
+      </label>
+      <p class="form-note" id="authNote">Only your name, email, and password are required.</p>
+      <button class="button button-primary" id="authSubmit" type="submit">Create account</button>
+      <button class="text-button" id="authSwitch" type="button">Already have an account? Log in</button>
+    </form>
+  </dialog>
+
+  <dialog id="tripDialog">
+    <form method="dialog" id="tripForm" class="modal-form">
+      <div class="dialog-heading">
+        <h2>Create itinerary</h2>
+        <button class="icon-button" id="closeTrip" type="button" aria-label="Close">×</button>
+      </div>
+      <label>
+        Trip name
+        <input id="tripName" required maxlength="60" placeholder="e.g. Montreal Weekend" />
+      </label>
+      <div class="two-col">
+        <label>
+          Start date
+          <input id="tripDate" type="date" required />
+        </label>
+        <label>
+          End date
+          <input id="tripEndDate" type="date" required />
+        </label>
+      </div>
+      <button class="button button-primary" value="default" type="submit">Create itinerary</button>
+    </form>
+  </dialog>
+
+  <section id="plannerPage" class="planner-page" hidden>
+    <div class="planner-shell">
+      <div class="dialog-heading planner-heading">
+        <div>
+          <span class="eyebrow">TRIP PLANNER</span>
+          <h2 id="plannerTitle">Trip</h2>
+          <p id="plannerDates"></p>
+        </div>
+        <button class="planner-back" id="closePlanner" type="button" aria-label="Back to itineraries">← Back</button>
+      </div>
+      <div id="plannerDays" class="planner-days"></div>
+      <form id="activityForm" class="activity-form" hidden>
+        <h3>Add to itinerary</h3>
+        <div class="activity-lookup">
+          <label>Look up a place or activity
+            <input id="activityLookup" type="search" placeholder="Airport, hotel, attraction, restaurant..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="search" />
+          </label>
+          <div id="activityLookupResults" class="lookup-results" hidden></div>
+        </div>
+        <div class="activity-grid">
+          <label>Type<select id="activityType">
+            <option value="activity">Activity / Place</option><option value="flight">Flight</option><option value="airport">Airport</option><option value="hotel">Hotel</option><option value="car_rental">Car Rental</option><option value="restaurant">Restaurant</option><option value="custom">Custom</option>
+          </select></label>
+          <label class="date-select-field">Day<select id="activityDay" required></select></label>
+          <label>Time<input id="activityTime" type="time" /></label>
+        </div>
+        <label>Title<input id="activityTitle" required maxlength="100" placeholder="What are you adding?" /></label>
+        <div id="flightFields" class="detail-fields" hidden>
+          <label>Airline<input id="flightAirline" placeholder="e.g. United Airlines" /></label><label>Flight number<input id="flightNumber" placeholder="e.g. UA 123" /></label><label>Departure airport<input id="flightFrom" placeholder="e.g. EWR — Newark Liberty" /></label><label>Arrival airport<input id="flightTo" placeholder="e.g. YUL — Montréal-Trudeau" /></label><label>Confirmation number<input id="flightConfirmation" placeholder="Optional" /></label>
+        </div>
+        <div id="airportFields" class="detail-fields" hidden>
+          <label>Airport name<input id="airportName" placeholder="e.g. Newark Liberty International Airport" /></label><label>Airport code<input id="airportCode" placeholder="e.g. EWR" maxlength="5" /></label><label>Terminal / gate<input id="airportTerminal" placeholder="e.g. Terminal A, Gate 22" /></label>
+        </div>
+        <div id="hotelFields" class="detail-fields" hidden>
+          <label>Hotel name<input id="hotelName" placeholder="Hotel name" /></label><label>Address<input id="hotelAddress" placeholder="Street address" /></label><label>Confirmation number<input id="hotelConfirmation" placeholder="Optional" /></label><label>Check-in details<input id="hotelCheckin" placeholder="e.g. Check-in after 3:00 PM" /></label>
+        </div>
+        <div id="carFields" class="detail-fields" hidden>
+          <label>Rental company<input id="carCompany" placeholder="e.g. Enterprise" /></label><label>Pickup location<input id="carPickup" placeholder="Airport or address" /></label><label>Drop-off location<input id="carDropoff" placeholder="Airport or address" /></label><label>Confirmation number<input id="carConfirmation" placeholder="Optional" /></label>
+        </div>
+        <div id="restaurantFields" class="detail-fields" hidden>
+          <label>Restaurant name<input id="restaurantName" placeholder="Restaurant name" /></label><label>Address<input id="restaurantAddress" placeholder="Address" /></label><label>Reservation details<input id="restaurantReservation" placeholder="Confirmation, party size, etc." /></label>
+        </div>
+        <label>Notes<textarea id="activityNotes" maxlength="500" placeholder="Optional details, reminders, links, baggage info, parking, etc."></textarea></label>
+        <button class="button button-primary" type="submit">Add to itinerary</button>
+      </form>
+    </div>
+  </section>
+
+  <nav class="bottom-nav" aria-label="Bottom navigation">
+    <a href="#home" class="active">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"/></svg>
+      <small>Home</small>
+    </a>
+    <a href="./splitz.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10ZM4 21v-2.2C4 15.6 6.7 14 10 14h4c3.3 0 6 1.6 6 4.8V21h-2v-2.2c0-1.8-1.7-2.8-4-2.8h-4c-2.3 0-4 1-4 2.8V21H4Zm7-17v2H9v2h2v2h2V8h2V6h-2V4h-2Z"/></svg>
+      <small>Splitz</small>
+    </a>
+    <a href="#itineraries">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h2v3h6V2h2v3h3v17H4V5h3V2Zm11 8H6v10h12V10ZM8 12h3v3H8v-3Zm5 0h3v3h-3v-3Zm-5 5h3v2H8v-2Zm5 0h3v2h-3v-2Z"/></svg>
+      <small>Itineraries</small>
+    </a>
+    <a href="#friends">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm8-1a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 21v-2c0-4 2.7-6 6-6s6 2 6 6v2H2Zm12.5 0v-2c0-2-.6-3.5-1.7-4.7.8-.2 1.5-.3 2.2-.3 3 0 5 1.8 5 5v2h-5.5Z"/></svg>
+      <small>Friends</small>
+    </a>
+  </nav>
+
+  <script src="./app.js?v=20260909-splitzpage1"></script>
+</body>
+</html>
