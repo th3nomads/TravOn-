@@ -231,7 +231,7 @@ async function searchPlaces(query) {
   activityLookupResults.hidden = false;
   activityLookupResults.innerHTML = '<div class="lookup-status">Searching…</div>';
   try {
-    const data = await api("/api/activity-search?q="+encodeURIComponent(q)+"&type="+encodeURIComponent(activityType.value)+"&context="+encodeURIComponent(trip.title), {method:"GET",headers:{}});
+    const data = await api("/api/activity-search?q="+encodeURIComponent(q)+"&type="+encodeURIComponent(activityType.value), {method:"GET",headers:{}});
     const results = Array.isArray(data.results) ? data.results : [];
     activityLookupResults.innerHTML = results.length ? results.map((result,index) => `
       <button type="button" class="lookup-result" data-index="${index}">
