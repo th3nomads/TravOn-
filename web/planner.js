@@ -14,6 +14,12 @@ const shareEmail = document.querySelector("#shareEmail");
 const shareMessage = document.querySelector("#shareMessage");
 const shareCanEdit = document.querySelector("#shareCanEdit");
 const sharedAccessList = document.querySelector("#sharedAccessList");
+const editDatesButton = document.querySelector("#editDatesButton");
+const editDatesForm = document.querySelector("#editDatesForm");
+const editStartDate = document.querySelector("#editStartDate");
+const editEndDate = document.querySelector("#editEndDate");
+const editDatesMessage = document.querySelector("#editDatesMessage");
+const saveDatesButton = document.querySelector("#saveDatesButton");
 let trip = null;
 let currentUser = null;
 let activeDate = null;
@@ -93,6 +99,8 @@ async function loadTrip() {
   if (!trip) return showError("We couldn't find this itinerary.");
   const readOnly = trip.access === "shared";
   document.body.classList.toggle("read-only-trip", readOnly);
+  editDatesButton.hidden = readOnly;
+  if (readOnly) editDatesForm.hidden = true;
   shareTripButton.hidden = trip.access !== "owner";
   if (trip.access !== "owner") shareTripForm.hidden = true;
   if (readOnly) activityForm.hidden = true;
@@ -277,6 +285,80 @@ async function saveTrip() {
     localStorage.setItem("travon.trips.v2",JSON.stringify(trips));
   }
 }
+
+function openDateEditor() {
+  if (!trip || trip.access === "shared") return;
+  editStartDate.value = trip.startDate;
+  editEndDate.value = trip.endDate;
+  editDatesMessage.textContent = "";
+  editDatesButton.hidden = true;
+  editDatesForm.hidden = false;
+  requestAnimationFrame(() => editStartDate.focus());
+}
+
+function closeDateEditor() {
+  editDatesForm.hidden = true;
+  editDatesButton.hidden = trip?.access === "shared";
+  editDatesMessage.textContent = "";
+}
+
+editDatesButton?.addEventListener("click", openDateEditor);
+document.querySelector("#cancelEditDates")?.addEventListener("click", closeDateEditor);
+editDatesForm?.addEventListener("submit", async event => {
+  event.preventDefault();
+  if (!trip || trip.access === "shared") return;
+
+  const startDate = editStartDate.value;
+  const endDate = editEndDate.value;
+  if (!startDate || !endDate || endDate < startDate) {
+    editDatesMessage.textContent = "Choose a valid start and end date.";
+    return;
+  }
+  if (startDate === trip.startDate && endDate === trip.endDate) {
+    closeDateEditor();
+    return;
+  }
+
+  const activities = trip.activities || [];
+  const removedActivities = activities.filter(activity => activity.date < startDate || activity.date > endDate);
+  if (removedActivities.length) {
+    const confirmed = window.confirm(
+      `This date change removes ${removedActivities.length} scheduled ${removedActivities.length === 1 ? "activity" : "activities"}. Continue?`
+    );
+    if (!confirmed) return;
+  }
+
+  const keptActivities = activities.filter(activity => activity.date >= startDate && activity.date <= endDate);
+  saveDatesButton.disabled = true;
+  editDatesMessage.textContent = "Saving…";
+  try {
+    if (currentUser) {
+      await api("/api/trips", {
+        method:"PUT",
+        body:JSON.stringify({ id:trip.id, startDate, endDate, activities:keptActivities })
+      });
+    } else {
+      const trips = JSON.parse(localStorage.getItem("travon.trips.v2") || "[]");
+      const index = trips.findIndex(item => String(item.id) === String(trip.id));
+      if (index >= 0) trips[index] = { ...trips[index], startDate, endDate, activities:keptActivities };
+      localStorage.setItem("travon.trips.v2", JSON.stringify(trips));
+    }
+
+    trip.startDate = startDate;
+    trip.endDate = endDate;
+    trip.activities = keptActivities;
+    if (activeDate && (activeDate < startDate || activeDate > endDate)) {
+      activeDate = null;
+      activityForm.hidden = true;
+    }
+    closeDateEditor();
+    renderPlanner();
+  } catch (error) {
+    editDatesMessage.textContent = error.message;
+  } finally {
+    saveDatesButton.disabled = false;
+  }
+});
 
 activityType.addEventListener("change",() => { updateFields(); resetLookup(); });
 activityLookup.addEventListener("input",event => {
