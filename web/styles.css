@@ -639,6 +639,16 @@ body.planner-page-open #plannerPage{display:block!important}
 /* Trip sharing and Friends */
 .standalone-planner .planner-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
 .planner-share-button{flex:0 0 auto}
+.planner-heading-actions{display:flex;flex:0 0 auto;gap:9px;align-items:center}
+.edit-dates-form{display:grid;gap:14px;margin:14px 0;padding:16px;border:1px solid var(--line);border-radius:18px;background:#fff;box-shadow:0 4px 16px rgba(15,23,42,.04)}
+.edit-dates-form[hidden]{display:none!important}
+.edit-dates-heading strong,.edit-dates-heading small{display:block}
+.edit-dates-heading small{margin-top:4px;color:#667085;line-height:1.4}
+.edit-dates-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.edit-dates-fields label{min-width:0}
+.edit-dates-fields input[type="date"]{width:100%;min-width:0;box-sizing:border-box;font-size:16px}
+.edit-dates-actions{display:flex;align-items:center;gap:12px}
+.edit-dates-actions .button{min-height:46px}
 .share-trip-form{display:grid;grid-template-columns:1fr auto auto;align-items:end;gap:10px;margin:14px 0;padding:14px;border:1px solid var(--line);border-radius:16px;background:#fff}
 .share-trip-form .form-note{grid-column:1/-1;margin:0}
 .friends-grid{display:grid;gap:12px;margin-top:18px}
@@ -651,6 +661,10 @@ body.planner-page-open #plannerPage{display:block!important}
 .friend-trip span{color:#667085;font-size:.82rem;text-align:right}
 @media(max-width:430px){
  .standalone-planner .planner-heading{display:grid}
+ .planner-heading-actions{display:grid;grid-template-columns:1fr 1fr;width:100%}
+ .planner-heading-actions .button{width:100%;padding-left:12px;padding-right:12px}
+ .edit-dates-fields{grid-template-columns:1fr}
+ .edit-dates-actions{display:grid;grid-template-columns:1fr auto}
  .planner-share-button{width:100%}
  .share-trip-form{grid-template-columns:1fr}
  .share-trip-form .form-note{grid-column:auto}
