@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#ffffff" />
   <title>TravOn Planner</title>
-  <link rel="stylesheet" href="./styles.css?v=20260909-shareedit1" />
+  <link rel="stylesheet" href="./styles.css?v=20260910-editdates1" />
 </head>
 <body class="planner-document">
   <header class="site-header planner-site-header">
@@ -40,8 +40,32 @@
           <p id="plannerDates"></p>
           <p id="sharedOwnerNote" class="shared-owner-note" hidden></p>
         </div>
-        <button class="button button-secondary planner-share-button" id="shareTripButton" type="button">Share trip</button>
+        <div class="planner-heading-actions">
+          <button class="button button-secondary" id="editDatesButton" type="button">Edit dates</button>
+          <button class="button button-secondary planner-share-button" id="shareTripButton" type="button">Share trip</button>
+        </div>
       </div>
+      <form id="editDatesForm" class="edit-dates-form" hidden>
+        <div class="edit-dates-heading">
+          <div>
+            <strong>Change trip dates</strong>
+            <small>Add days by extending the range, or remove days by shortening it.</small>
+          </div>
+        </div>
+        <div class="edit-dates-fields">
+          <label>Start date
+            <input id="editStartDate" type="date" required />
+          </label>
+          <label>End date
+            <input id="editEndDate" type="date" required />
+          </label>
+        </div>
+        <div class="edit-dates-actions">
+          <button class="button button-primary" id="saveDatesButton" type="submit">Save dates</button>
+          <button class="text-button" id="cancelEditDates" type="button">Cancel</button>
+        </div>
+        <p id="editDatesMessage" class="form-note" aria-live="polite"></p>
+      </form>
       <form id="shareTripForm" class="share-trip-form" hidden>
         <label>Share with a TravOn user
           <input id="shareEmail" type="email" autocomplete="email" placeholder="Their account email" required />
@@ -140,6 +164,6 @@
     <a href="./index.html#friends"><svg viewBox="0 0 24 24"><path d="M8 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm8-1a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 21v-2c0-4 2.7-6 6-6s6 2 6 6v2H2Z"/></svg><small>Friends</small></a>
   </nav>
 
-  <script src="./planner.js?v=20260909-shareedit1"></script>
+  <script src="./planner.js?v=20260910-editdates1"></script>
 </body>
 </html>
