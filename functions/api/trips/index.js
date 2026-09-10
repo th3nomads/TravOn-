@@ -77,6 +77,13 @@ export async function onRequestPut({ request, env }) {
   const body = await readJson(request);
   const id = String(body?.id || "");
   const activities = Array.isArray(body?.activities) ? body.activities : [];
+  const hasDateUpdate = body?.startDate !== undefined || body?.endDate !== undefined;
+  const startDate = String(body?.startDate || "");
+  const endDate = String(body?.endDate || "");
+
+  if (hasDateUpdate && (!/^\d{4}-\d{2}-\d{2}$/.test(startDate) || !/^\d{4}-\d{2}-\d{2}$/.test(endDate) || endDate < startDate)) {
+    return json({ error: "Choose a valid start and end date." }, 400);
+  }
 
   const existing = await env.DB.prepare(
     `SELECT t.id FROM trips t
@@ -90,9 +97,19 @@ export async function onRequestPut({ request, env }) {
 
   if (!existing) return json({ error: "You do not have edit access to this itinerary." }, 403);
 
-  await env.DB.prepare(
-    "UPDATE trips SET activities_json = ?, updated_at = datetime('now') WHERE id = ?"
-  ).bind(JSON.stringify(activities), id).run();
+  if (hasDateUpdate) {
+    const keptActivities = activities.filter(activity => {
+      const date = String(activity?.date || "");
+      return date >= startDate && date <= endDate;
+    });
+    await env.DB.prepare(
+      "UPDATE trips SET start_date = ?, end_date = ?, activities_json = ?, updated_at = datetime('now') WHERE id = ?"
+    ).bind(startDate, endDate, JSON.stringify(keptActivities), id).run();
+  } else {
+    await env.DB.prepare(
+      "UPDATE trips SET activities_json = ?, updated_at = datetime('now') WHERE id = ?"
+    ).bind(JSON.stringify(activities), id).run();
+  }
 
   return json({ ok: true });
 }
