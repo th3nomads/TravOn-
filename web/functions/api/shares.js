@@ -61,3 +61,25 @@ export async function onRequestPost({ request, env }) {
 
   return json({ share: { id, tripId, recipientId: recipient.id, name: recipient.name || "", email: recipient.email, tripTitle: trip.title } }, 201);
 }
+
+export async function onRequestDelete({ request, env }) {
+  if (!env.DB) return json({ error: "Database is not configured yet." }, 503);
+  const auth = await requireUser(request, env.DB);
+  if (auth.response) return auth.response;
+
+  const body = await readJson(request);
+  const tripId = String(body?.tripId || "").trim();
+  if (!tripId) return json({ error: "Trip is required." }, 400);
+
+  const share = await env.DB.prepare(
+    "SELECT id FROM trip_shares WHERE trip_id = ? AND recipient_id = ?"
+  ).bind(tripId, auth.user.id).first();
+
+  if (!share) return json({ error: "Shared itinerary not found." }, 404);
+
+  await env.DB.prepare(
+    "DELETE FROM trip_shares WHERE trip_id = ? AND recipient_id = ?"
+  ).bind(tripId, auth.user.id).run();
+
+  return json({ ok: true });
+}
