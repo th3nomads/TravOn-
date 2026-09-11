@@ -1,0 +1,13 @@
+/* Match the desktop TravOn hero artwork on mobile/tablet while preserving mobile layout. */
+@media (max-width: 1199px) {
+  .hero {
+    background-image: url("./banner.png?v=20260911-mobile1") !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+  }
+
+  .hero-art {
+    display: none !important;
+  }
+}
