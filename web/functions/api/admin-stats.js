@@ -11,6 +11,15 @@ export async function onRequestGet({ request, env }) {
   const email = String(auth.user?.email || "").trim().toLowerCase();
   if (email !== ADMIN_EMAIL) return json({ error: "Not authorized." }, 403);
 
-  const row = await env.DB.prepare("SELECT COUNT(*) AS totalUsers FROM users").first();
-  return json({ totalUsers: Number(row?.totalUsers || 0) });
+  const usersResult = await env.DB.prepare(
+    "SELECT name, email, created_at FROM users ORDER BY datetime(created_at) DESC"
+  ).all();
+
+  const users = (usersResult?.results || []).map((user) => ({
+    name: String(user?.name || "").trim(),
+    email: String(user?.email || "").trim(),
+    createdAt: user?.created_at || null
+  }));
+
+  return json({ totalUsers: users.length, users });
 }
