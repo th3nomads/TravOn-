@@ -27,8 +27,8 @@
     min-height: 390px;
     padding: 28px 5vw 78px;
     display: block;
-    background-image: url("./banner.png?v=20260911-banner2");
-    background-size: cover;
+    background-image: url("./banner.png?v=20260911-banner3");
+    background-size: 100% 100%;
     background-position: center center;
     background-repeat: no-repeat;
     border-bottom: 1px solid #d9eeee;
