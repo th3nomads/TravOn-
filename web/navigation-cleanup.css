@@ -1,0 +1,12 @@
+.desktop-nav a[href="#friends"],
+.desktop-nav a[href$="#friends"],
+.mobile-menu a[href="#friends"],
+.mobile-menu a[href$="#friends"],
+.bottom-nav a[href="#friends"],
+.bottom-nav a[href$="#friends"] {
+  display: none !important;
+}
+
+.bottom-nav {
+  grid-template-columns: repeat(4, 1fr) !important;
+}
