@@ -148,6 +148,33 @@
     if (signedIn === false) loggedOutTripState();
   }
 
+  function requireAccountForTripCreation() {
+    const createAccountButton = document.querySelector("#signupButton");
+    if (createAccountButton?.dataset?.action === "signup") {
+      createAccountButton.click();
+      return;
+    }
+    document.querySelector("#heroSignupButton")?.click();
+  }
+
+  function guardTripCreation() {
+    document.addEventListener("click", (event) => {
+      const trigger = event.target.closest?.("#newTripButton, #heroPlanButton");
+      if (!trigger || signedIn === true) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      requireAccountForTripCreation();
+    }, true);
+
+    document.addEventListener("submit", (event) => {
+      if (event.target?.id !== "tripForm" || signedIn === true) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      document.querySelector("#tripDialog")?.close?.();
+      requireAccountForTripCreation();
+    }, true);
+  }
+
   async function checkSession() {
     try {
       const response = await fetch("/api/auth/me", { credentials: "same-origin" });
@@ -236,6 +263,7 @@
   }
 
   async function init() {
+    guardTripCreation();
     watchLogoutState();
     await checkSession();
     if (signedIn) await loadAdminStats();
