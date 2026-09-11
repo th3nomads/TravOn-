@@ -1,9 +1,13 @@
-/* Match the desktop TravOn hero artwork on mobile/tablet while preserving mobile layout. */
+/* Match the desktop TravOn hero artwork on mobile/tablet and make it full bleed. */
 @media (max-width: 1199px) {
   .hero {
-    background-image: url("./banner.png?v=20260911-mobile1") !important;
+    width: 100vw !important;
+    max-width: none !important;
+    margin-left: calc(50% - 50vw) !important;
+    margin-right: calc(50% - 50vw) !important;
+    background-image: url("./banner.png?v=20260911-mobile2") !important;
     background-size: cover !important;
-    background-position: center center !important;
+    background-position: center bottom !important;
     background-repeat: no-repeat !important;
   }
 
