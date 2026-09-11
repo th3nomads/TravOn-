@@ -6,7 +6,7 @@ export async function onRequest(context) {
   return new HTMLRewriter()
     .on("head", {
       element(element) {
-        element.append('<link rel="stylesheet" href="/desktop-compact.css?v=20260911-panorama1"><link rel="stylesheet" href="/navigation-cleanup.css?v=20260911-friends1">', { html: true });
+        element.append('<link rel="stylesheet" href="/desktop-compact.css?v=20260911-panorama1"><link rel="stylesheet" href="/navigation-cleanup.css?v=20260911-friends1"><link rel="stylesheet" href="/mobile-banner.css?v=20260911-mobile1">', { html: true });
       }
     })
     .on("body", {
