@@ -25,18 +25,19 @@
   .hero {
     min-height: 460px;
     padding: 0 5vw;
-    grid-template-columns: 1.05fr .95fr;
+    grid-template-columns: 1.12fr .88fr;
   }
 
   .hero-content {
     padding: 24px 0;
-    max-width: 560px;
+    max-width: 700px;
   }
 
   .hero h1 {
     font-size: 3.75rem;
     line-height: 1;
     margin-bottom: 4px;
+    white-space: nowrap;
   }
 
   .hero h2 {
@@ -66,7 +67,7 @@
   }
 
   .hero-art {
-    max-width: 460px;
+    max-width: 440px;
     justify-self: end;
   }
 
