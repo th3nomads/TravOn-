@@ -1,5 +1,14 @@
 import { json, readJson, requireUser, normalizeEmail, isValidEmail } from "./_utils.js";
 
+function normalizeName(value) {
+  return String(value || "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .split(" ")
+    .map(part => part ? part.charAt(0).toUpperCase() + part.slice(1) : part)
+    .join(" ");
+}
+
 export async function onRequestGet({ request, env }) {
   if (!env.DB) return json({ error: "Database is not configured yet." }, 503);
   const auth = await requireUser(request, env.DB);
@@ -27,7 +36,12 @@ export async function onRequestGet({ request, env }) {
       WHERE ts.recipient_id = ?`
   ).bind(auth.user.id).all();
 
-  return json({ shares: [...outgoing, ...incoming] });
+  const shares = [...outgoing, ...incoming].map(share => ({
+    ...share,
+    name: normalizeName(share.name)
+  }));
+
+  return json({ shares });
 }
 
 export async function onRequestPost({ request, env }) {
@@ -46,8 +60,9 @@ export async function onRequestPost({ request, env }) {
 
   const recipient = await env.DB.prepare("SELECT id, name, email FROM users WHERE email = ?").bind(email).first();
   if (!recipient) return json({ error: "No TravOn account was found with that email. Ask them to create an account first." }, 404);
-  if (recipient.id === auth.user.id) return json({ error: "You already own this itinerary." }, 400);
+  if (recipient.id === auth.user.id) return json({ error: "You already own this Itinerary." }, 400);
 
+  const recipientName = normalizeName(recipient.name);
   const id = crypto.randomUUID();
   try {
     await env.DB.prepare(
@@ -55,12 +70,12 @@ export async function onRequestPost({ request, env }) {
     ).bind(id, tripId, auth.user.id, recipient.id, canEdit).run();
   } catch (error) {
     if (String(error?.message || "").toLowerCase().includes("unique")) {
-      return json({ error: "This trip is already shared with " + (recipient.name || recipient.email) + "." }, 409);
+      return json({ error: "This trip is already shared with " + (recipientName || recipient.email) + "." }, 409);
     }
     throw error;
   }
 
-  return json({ share: { id, tripId, recipientId: recipient.id, name: recipient.name || "", email: recipient.email, tripTitle: trip.title, canEdit: !!canEdit } }, 201);
+  return json({ share: { id, tripId, recipientId: recipient.id, name: recipientName, email: recipient.email, tripTitle: trip.title, canEdit: !!canEdit } }, 201);
 }
 
 export async function onRequestPut({ request, env }) {
@@ -75,7 +90,7 @@ export async function onRequestPut({ request, env }) {
   const share = await env.DB.prepare(
     "SELECT id FROM trip_shares WHERE id = ? AND owner_id = ?"
   ).bind(shareId, auth.user.id).first();
-  if (!share) return json({ error: "Only the itinerary owner can change access." }, 403);
+  if (!share) return json({ error: "Only the Itinerary owner can change access." }, 403);
 
   await env.DB.prepare("UPDATE trip_shares SET can_edit = ? WHERE id = ? AND owner_id = ?")
     .bind(canEdit, shareId, auth.user.id).run();
