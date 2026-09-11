@@ -1,11 +1,20 @@
 import { createSession, hashPassword, isValidEmail, json, normalizeEmail, readJson } from "../_utils.js";
 
+function normalizeName(value) {
+  return String(value || "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .split(" ")
+    .map(part => part ? part.charAt(0).toUpperCase() + part.slice(1) : part)
+    .join(" ");
+}
+
 export async function onRequestPost({ request, env }) {
   try {
     if (!env.DB) return json({ error: "Database is not configured yet." }, 503);
 
     const body = await readJson(request);
-    const name = String(body?.name || "").trim();
+    const name = normalizeName(body?.name);
     const email = normalizeEmail(body?.email);
     const password = String(body?.password || "");
 
