@@ -1,16 +1,31 @@
 (() => {
   let signedIn = null;
 
+  function setLoggedOutGrid(grid, html, marker) {
+    if (!grid) return;
+    if (grid.dataset.loggedOutState === marker) return;
+    grid.innerHTML = html;
+    grid.dataset.loggedOutState = marker;
+  }
+
+  function clearLoggedOutMarker(grid) {
+    if (grid?.dataset?.loggedOutState) delete grid.dataset.loggedOutState;
+  }
+
   function loggedOutTripState() {
     const tripGrid = document.querySelector("#tripGrid");
-    if (tripGrid) {
-      tripGrid.innerHTML = '<div class="empty-state"><h3>Log in to view your trips</h3><p>Your saved and shared itineraries will appear here after you sign in.</p></div>';
-    }
+    setLoggedOutGrid(
+      tripGrid,
+      '<div class="empty-state"><h3>Log in to view your trips</h3><p>Your saved and shared Itineraries will appear here after you sign in.</p></div>',
+      "trips"
+    );
 
     const friendsGrid = document.querySelector("#friendsGrid");
-    if (friendsGrid) {
-      friendsGrid.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div><h3>Log in to see shared trips</h3><p>Your TravOn friends and shared itineraries will appear here after you sign in.</p></div>';
-    }
+    setLoggedOutGrid(
+      friendsGrid,
+      '<div class="empty-state"><div class="empty-icon">👥</div><h3>Log in to see shared trips</h3><p>Your TravOn friends and shared Itineraries will appear here after you sign in.</p></div>',
+      "friends"
+    );
 
     const plannerPage = document.querySelector("#plannerPage");
     if (plannerPage) plannerPage.hidden = true;
@@ -28,7 +43,12 @@
       const response = await fetch("/api/auth/me", { credentials: "same-origin" });
       const data = await response.json().catch(() => ({}));
       signedIn = !!data?.user;
-      enforceLoggedOutPrivacy();
+      if (signedIn) {
+        clearLoggedOutMarker(document.querySelector("#tripGrid"));
+        clearLoggedOutMarker(document.querySelector("#friendsGrid"));
+      } else {
+        enforceLoggedOutPrivacy();
+      }
     } catch {
       signedIn = false;
       enforceLoggedOutPrivacy();
@@ -75,6 +95,8 @@
       const heroAction = heroLoginButton?.dataset?.action;
       if (desktopAction === "logout" || heroAction === "logout") {
         signedIn = true;
+        clearLoggedOutMarker(document.querySelector("#tripGrid"));
+        clearLoggedOutMarker(document.querySelector("#friendsGrid"));
         return;
       }
       if (desktopAction === "signup" || heroAction === "login") {
@@ -90,7 +112,11 @@
 
     const tripGrid = document.querySelector("#tripGrid");
     if (tripGrid) {
-      new MutationObserver(enforceLoggedOutPrivacy).observe(tripGrid, { childList: true, subtree: true });
+      new MutationObserver(() => {
+        if (signedIn !== false) return;
+        if (tripGrid.dataset.loggedOutState === "trips") return;
+        enforceLoggedOutPrivacy();
+      }).observe(tripGrid, { childList: true });
     }
   }
 
