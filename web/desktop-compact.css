@@ -1,16 +1,16 @@
 @media (min-width: 1200px) {
   .site-header {
-    min-height: 68px;
-    padding: 6px 4vw;
+    min-height: 62px;
+    padding: 4px 4vw;
   }
 
   .travon-logo {
-    width: 58px;
-    height: 58px;
+    width: 54px;
+    height: 54px;
   }
 
   .desktop-nav {
-    gap: 20px;
+    gap: 18px;
   }
 
   .desktop-account-actions {
@@ -18,172 +18,187 @@
   }
 
   .site-header .button {
-    min-height: 42px;
-    padding: 9px 16px;
+    min-height: 40px;
+    padding: 8px 15px;
   }
 
   .hero {
-    min-height: 460px;
-    padding: 0 5vw;
-    grid-template-columns: 1.12fr .88fr;
+    min-height: 340px;
+    padding: 18px 5vw;
+    grid-template-columns: 1.08fr .92fr;
+    align-items: center;
   }
 
   .hero-content {
-    padding: 24px 0;
+    padding: 10px 0;
     max-width: 700px;
   }
 
   .hero h1 {
-    font-size: 3.75rem;
+    font-size: 3.35rem;
     line-height: 1;
     margin-bottom: 4px;
     white-space: nowrap;
   }
 
   .hero h2 {
-    font-size: 1.55rem;
-    margin-bottom: 8px;
+    font-size: 1.4rem;
+    margin-bottom: 7px;
   }
 
   .hero p {
-    font-size: .95rem;
-    line-height: 1.45;
-    max-width: 360px;
+    font-size: .93rem;
+    line-height: 1.4;
+    max-width: 340px;
+    margin-bottom: 0;
   }
 
   .logged-in-greeting {
-    margin-top: 6px;
+    margin-top: 5px;
   }
 
   .hero-account-actions {
-    margin-top: 14px;
-    gap: 8px;
-    max-width: 360px;
+    margin-top: 12px;
+    gap: 7px;
+    max-width: 330px;
   }
 
   .hero-account-actions .button {
-    min-height: 44px;
-    padding: 9px 16px;
+    min-height: 40px;
+    padding: 8px 14px;
   }
 
   .hero-art {
-    max-width: 440px;
+    max-width: 360px;
     justify-self: end;
   }
 
   .search-section,
   .featured-section,
   .section {
-    padding-left: 5vw;
-    padding-right: 5vw;
+    width: min(1180px, 90vw);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .featured-section,
   .section {
-    padding-top: 16px;
-    padding-bottom: 20px;
+    padding-top: 12px;
+    padding-bottom: 14px;
   }
 
   .section-row {
-    margin-bottom: 12px;
-    gap: 12px;
+    margin-bottom: 8px;
+    gap: 10px;
   }
 
   .section-row h2,
   .section h2 {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
   }
 
   .eyebrow {
-    margin-bottom: 4px;
+    margin-bottom: 3px;
+  }
+
+  .itineraries-section {
+    min-height: auto;
   }
 
   .trip-list,
   .destination-list {
-    gap: 12px;
+    gap: 10px;
   }
 
   .trip-list .card,
   .card {
-    padding: 15px;
-    border-radius: 16px;
+    padding: 13px;
+    border-radius: 14px;
   }
 
   .card h3 {
-    margin: 7px 0 4px;
-    font-size: 1.1rem;
+    margin: 5px 0 3px;
+    font-size: 1.05rem;
   }
 
   .card-meta {
-    margin-top: 10px;
+    margin-top: 8px;
   }
 
   .destination-card {
-    min-height: 260px;
-    border-radius: 18px;
-  }
-
-  .destination-image {
-    min-height: 150px;
-  }
-
-  .destination-copy {
-    min-height: 100px;
-    padding: 12px 38px 12px 14px;
-  }
-
-  .destination-copy h3 {
-    margin: 6px 0;
-    font-size: 1.08rem;
-  }
-
-  .destination-copy p {
-    font-size: .9rem;
-  }
-
-  .friends-section {
-    padding-bottom: 22px;
-  }
-
-  .empty-state {
-    margin-top: 12px;
-    padding: 18px;
+    min-height: 240px;
     border-radius: 16px;
   }
 
+  .destination-image {
+    min-height: 140px;
+  }
+
+  .destination-copy {
+    min-height: 92px;
+    padding: 10px 34px 10px 12px;
+  }
+
+  .destination-copy h3 {
+    margin: 5px 0;
+    font-size: 1.04rem;
+  }
+
+  .destination-copy p {
+    font-size: .88rem;
+  }
+
+  .empty-state {
+    margin-top: 8px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    max-width: 520px;
+  }
+
+  .friends-section {
+    padding-top: 10px;
+    padding-bottom: 16px;
+  }
+
+  .friends-section .empty-state {
+    max-width: 520px;
+  }
+
   .friend-card {
-    padding: 16px;
+    padding: 14px;
   }
 
   .planner-shell {
-    padding: 16px;
+    padding: 14px;
   }
 
   .planner-days {
-    margin: 14px 0;
-    gap: 10px;
+    margin: 12px 0;
+    gap: 9px;
   }
 
   .planner-day {
-    padding: 13px;
+    padding: 12px;
   }
 
   .activity-form {
-    padding-top: 14px;
+    padding-top: 12px;
   }
 
   .modal-form {
-    gap: 14px;
-    padding: 20px;
+    gap: 12px;
+    padding: 18px;
   }
 
   .dialog-heading h2 {
-    font-size: 1.65rem;
+    font-size: 1.55rem;
   }
 
   label input,
   label select {
-    min-height: 48px;
-    padding: 10px 12px;
+    min-height: 44px;
+    padding: 9px 11px;
   }
 }
