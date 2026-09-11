@@ -11,7 +11,7 @@ export async function onRequest(context) {
     })
     .on("body", {
       element(element) {
-        element.append('<script src="/shared-remove.js?v=20260910-remove-shared1"></script><script src="/itinerary-label.js?v=20260910-singular1"></script><script src="/capitalize-itinerary.js?v=20260910-cap1"></script><script src="/admin-stats.js?v=20260910-admin1"></script><script src="/desktop-panorama.js?v=20260911-panorama1"></script>', { html: true });
+        element.append('<script src="/shared-remove.js?v=20260910-remove-shared1"></script><script src="/itinerary-label.js?v=20260910-singular1"></script><script src="/capitalize-itinerary.js?v=20260910-cap1"></script><script src="/admin-stats.js?v=20260911-users1"></script><script src="/desktop-panorama.js?v=20260911-panorama1"></script>', { html: true });
       }
     })
     .transform(response);
