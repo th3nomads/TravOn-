@@ -1,0 +1,188 @@
+@media (min-width: 1200px) {
+  .site-header {
+    min-height: 68px;
+    padding: 6px 4vw;
+  }
+
+  .travon-logo {
+    width: 58px;
+    height: 58px;
+  }
+
+  .desktop-nav {
+    gap: 20px;
+  }
+
+  .desktop-account-actions {
+    gap: 8px;
+  }
+
+  .site-header .button {
+    min-height: 42px;
+    padding: 9px 16px;
+  }
+
+  .hero {
+    min-height: 460px;
+    padding: 0 5vw;
+    grid-template-columns: 1.05fr .95fr;
+  }
+
+  .hero-content {
+    padding: 24px 0;
+    max-width: 560px;
+  }
+
+  .hero h1 {
+    font-size: 3.75rem;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .hero h2 {
+    font-size: 1.55rem;
+    margin-bottom: 8px;
+  }
+
+  .hero p {
+    font-size: .95rem;
+    line-height: 1.45;
+    max-width: 360px;
+  }
+
+  .logged-in-greeting {
+    margin-top: 6px;
+  }
+
+  .hero-account-actions {
+    margin-top: 14px;
+    gap: 8px;
+    max-width: 360px;
+  }
+
+  .hero-account-actions .button {
+    min-height: 44px;
+    padding: 9px 16px;
+  }
+
+  .hero-art {
+    max-width: 460px;
+    justify-self: end;
+  }
+
+  .search-section,
+  .featured-section,
+  .section {
+    padding-left: 5vw;
+    padding-right: 5vw;
+  }
+
+  .featured-section,
+  .section {
+    padding-top: 16px;
+    padding-bottom: 20px;
+  }
+
+  .section-row {
+    margin-bottom: 12px;
+    gap: 12px;
+  }
+
+  .section-row h2,
+  .section h2 {
+    font-size: 1.4rem;
+  }
+
+  .eyebrow {
+    margin-bottom: 4px;
+  }
+
+  .trip-list,
+  .destination-list {
+    gap: 12px;
+  }
+
+  .trip-list .card,
+  .card {
+    padding: 15px;
+    border-radius: 16px;
+  }
+
+  .card h3 {
+    margin: 7px 0 4px;
+    font-size: 1.1rem;
+  }
+
+  .card-meta {
+    margin-top: 10px;
+  }
+
+  .destination-card {
+    min-height: 260px;
+    border-radius: 18px;
+  }
+
+  .destination-image {
+    min-height: 150px;
+  }
+
+  .destination-copy {
+    min-height: 100px;
+    padding: 12px 38px 12px 14px;
+  }
+
+  .destination-copy h3 {
+    margin: 6px 0;
+    font-size: 1.08rem;
+  }
+
+  .destination-copy p {
+    font-size: .9rem;
+  }
+
+  .friends-section {
+    padding-bottom: 22px;
+  }
+
+  .empty-state {
+    margin-top: 12px;
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .friend-card {
+    padding: 16px;
+  }
+
+  .planner-shell {
+    padding: 16px;
+  }
+
+  .planner-days {
+    margin: 14px 0;
+    gap: 10px;
+  }
+
+  .planner-day {
+    padding: 13px;
+  }
+
+  .activity-form {
+    padding-top: 14px;
+  }
+
+  .modal-form {
+    gap: 14px;
+    padding: 20px;
+  }
+
+  .dialog-heading h2 {
+    font-size: 1.65rem;
+  }
+
+  label input,
+  label select {
+    min-height: 48px;
+    padding: 10px 12px;
+  }
+}
