@@ -23,15 +23,18 @@
   }
 
   .hero {
-    min-height: 340px;
-    padding: 18px 5vw;
-    grid-template-columns: 1.08fr .92fr;
+    min-height: 320px;
+    padding: 20px 5vw;
+    grid-template-columns: 1.12fr .88fr;
     align-items: center;
+    background: linear-gradient(90deg, #f8fcfc 0%, #eefafa 54%, #dff6f7 100%);
+    border-bottom: 1px solid #d9eeee;
+    overflow: hidden;
   }
 
   .hero-content {
-    padding: 10px 0;
-    max-width: 700px;
+    padding: 8px 0;
+    max-width: 720px;
   }
 
   .hero h1 {
@@ -49,7 +52,7 @@
   .hero p {
     font-size: .93rem;
     line-height: 1.4;
-    max-width: 340px;
+    max-width: 360px;
     margin-bottom: 0;
   }
 
@@ -69,8 +72,18 @@
   }
 
   .hero-art {
-    max-width: 360px;
+    width: min(500px, 42vw);
+    max-width: none;
     justify-self: end;
+    align-self: stretch;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+  }
+
+  .hero-art svg {
+    width: 100%;
+    max-height: 300px;
   }
 
   .search-section,
