@@ -6,10 +6,11 @@
     margin-left: 0 !important;
     margin-right: 0 !important;
     overflow: hidden !important;
-    background-image: url("./banner.png?v=20260911-mobile3") !important;
-    background-size: cover !important;
+    background-image: url("./banner.png?v=20260911-mobile4") !important;
+    background-size: 100% auto !important;
     background-position: center bottom !important;
     background-repeat: no-repeat !important;
+    background-color: #eefafa !important;
   }
 
   .hero-art {
