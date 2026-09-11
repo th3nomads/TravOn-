@@ -2,6 +2,11 @@
   const grid = document.querySelector("#tripGrid");
   if (!grid) return;
 
+  const tripsHeading = document.querySelector("#itineraries .section-row h2");
+  if (tripsHeading && tripsHeading.textContent.trim() === "Your itineraries") {
+    tripsHeading.textContent = "Your Itineraries";
+  }
+
   let sharedTrips = [];
   let loading = false;
 
