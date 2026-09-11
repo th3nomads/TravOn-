@@ -66,14 +66,7 @@
   }
 
   .hero-account-actions {
-    margin-top: 12px;
-    gap: 7px;
-    max-width: 330px;
-  }
-
-  .hero-account-actions .button {
-    min-height: 40px;
-    padding: 8px 14px;
+    display: none;
   }
 
   .hero-art {
