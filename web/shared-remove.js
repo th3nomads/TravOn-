@@ -3,9 +3,7 @@
   if (!grid) return;
 
   const tripsHeading = document.querySelector("#itineraries .section-row h2");
-  if (tripsHeading && tripsHeading.textContent.trim() === "Your itineraries") {
-    tripsHeading.textContent = "Your Itineraries";
-  }
+  if (tripsHeading) tripsHeading.remove();
 
   let sharedTrips = [];
   let loading = false;
