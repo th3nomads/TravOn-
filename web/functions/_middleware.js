@@ -6,7 +6,7 @@ export async function onRequest(context) {
   return new HTMLRewriter()
     .on("body", {
       element(element) {
-        element.append('<script src="/shared-remove.js?v=20260910-remove-shared1"></script>', { html: true });
+        element.append('<script src="/shared-remove.js?v=20260910-remove-shared1"></script><script src="/itinerary-label.js?v=20260910-singular1"></script>', { html: true });
       }
     })
     .transform(response);
