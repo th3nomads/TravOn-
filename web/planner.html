@@ -6,6 +6,8 @@
   <meta name="theme-color" content="#ffffff" />
   <title>TravOn Planner</title>
   <link rel="stylesheet" href="./styles.css?v=20260909-shareedit1" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+  <link rel="stylesheet" href="./hilton-map.css?v=20260916-hilton1" />
 </head>
 <body class="planner-document">
   <header class="site-header planner-site-header">
@@ -34,99 +36,34 @@
   <main class="standalone-planner">
     <section class="planner-shell">
       <div class="planner-heading">
-        <div>
-          <span class="eyebrow">TRIP PLANNER</span>
-          <h1 id="plannerTitle">Loading trip…</h1>
-          <p id="plannerDates"></p>
-          <p id="sharedOwnerNote" class="shared-owner-note" hidden></p>
-        </div>
+        <div><span class="eyebrow">TRIP PLANNER</span><h1 id="plannerTitle">Loading trip…</h1><p id="plannerDates"></p><p id="sharedOwnerNote" class="shared-owner-note" hidden></p></div>
         <button class="button button-secondary planner-share-button" id="shareTripButton" type="button">Share trip</button>
       </div>
       <form id="shareTripForm" class="share-trip-form" hidden>
-        <label>Share with a TravOn user
-          <input id="shareEmail" type="email" autocomplete="email" placeholder="Their account email" required />
-        </label>
-        <label class="share-access-field">Access
-          <select id="shareCanEdit">
-            <option value="view">View only</option>
-            <option value="edit">Can edit itinerary & Splitz</option>
-          </select>
-        </label>
-        <button class="button button-primary" type="submit">Share</button>
-        <button class="text-button" id="cancelShare" type="button">Cancel</button>
-        <p id="shareMessage" class="form-note"></p>
+        <label>Share with a TravOn user<input id="shareEmail" type="email" autocomplete="email" placeholder="Their account email" required /></label>
+        <label class="share-access-field">Access<select id="shareCanEdit"><option value="view">View only</option><option value="edit">Can edit itinerary & Splitz</option></select></label>
+        <button class="button button-primary" type="submit">Share</button><button class="text-button" id="cancelShare" type="button">Cancel</button><p id="shareMessage" class="form-note"></p>
       </form>
       <div id="sharedAccessList" class="shared-access-list" hidden></div>
-
       <div id="plannerError" class="empty-state" hidden></div>
       <div id="plannerDays" class="planner-days"></div>
 
+      <section class="hilton-map-section" aria-labelledby="hiltonMapTitle">
+        <div class="hilton-map-heading"><div><h2 id="hiltonMapTitle">Hilton hotels near your trip</h2><p id="hiltonMapStatus">Finding Hilton hotels near your itinerary…</p></div></div>
+        <div id="hiltonMap" class="hilton-map" aria-label="Map of Hilton hotels near itinerary locations"></div>
+      </section>
+
       <form id="activityForm" class="activity-form" hidden>
-        <div class="selected-day-banner">
-          <span>Adding to</span>
-          <strong id="selectedDayLabel"></strong>
-        </div>
-
+        <div class="selected-day-banner"><span>Adding to</span><strong id="selectedDayLabel"></strong></div>
         <h2>Add to itinerary</h2>
-
-        <div class="activity-lookup">
-          <label>Look up a place or activity
-            <input id="activityLookup" type="search" placeholder="Airport, hotel, attraction, restaurant..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="search" />
-          </label>
-          <div id="activityLookupResults" class="lookup-results" hidden></div>
-        </div>
-
-        <div class="activity-grid">
-          <label>Type
-            <select id="activityType">
-              <option value="activity">Activity / Place</option>
-              <option value="flight">Flight</option>
-              <option value="airport">Airport</option>
-              <option value="hotel">Hotel</option>
-              <option value="car_rental">Car Rental</option>
-              <option value="restaurant">Restaurant</option>
-              <option value="custom">Custom</option>
-            </select>
-          </label>
-          <label>Time<input id="activityTime" type="time" /></label>
-        </div>
-
+        <div class="activity-lookup"><label>Look up a place or activity<input id="activityLookup" type="search" placeholder="Airport, hotel, attraction, restaurant..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="search" /></label><div id="activityLookupResults" class="lookup-results" hidden></div></div>
+        <div class="activity-grid"><label>Type<select id="activityType"><option value="activity">Activity / Place</option><option value="flight">Flight</option><option value="airport">Airport</option><option value="hotel">Hotel</option><option value="car_rental">Car Rental</option><option value="restaurant">Restaurant</option><option value="custom">Custom</option></select></label><label>Time<input id="activityTime" type="time" /></label></div>
         <label>Title<input id="activityTitle" required maxlength="100" placeholder="What are you adding?" /></label>
-
-        <div id="flightFields" class="detail-fields" hidden>
-          <label>Airline<input id="flightAirline" placeholder="e.g. United Airlines" /></label>
-          <label>Flight number<input id="flightNumber" placeholder="e.g. UA 123" /></label>
-          <label>Departure airport<input id="flightFrom" placeholder="e.g. EWR — Newark Liberty" /></label>
-          <label>Arrival airport<input id="flightTo" placeholder="e.g. YUL — Montréal-Trudeau" /></label>
-          <label>Confirmation number<input id="flightConfirmation" placeholder="Optional" /></label>
-        </div>
-
-        <div id="airportFields" class="detail-fields" hidden>
-          <label>Airport name<input id="airportName" placeholder="e.g. Newark Liberty International Airport" /></label>
-          <label>Airport code<input id="airportCode" placeholder="e.g. EWR" maxlength="5" /></label>
-          <label>Terminal / gate<input id="airportTerminal" placeholder="e.g. Terminal A, Gate 22" /></label>
-        </div>
-
-        <div id="hotelFields" class="detail-fields" hidden>
-          <label>Hotel name<input id="hotelName" placeholder="Hotel name" /></label>
-          <label>Address<input id="hotelAddress" placeholder="Street address" /></label>
-          <label>Confirmation number<input id="hotelConfirmation" placeholder="Optional" /></label>
-          <label>Check-in details<input id="hotelCheckin" placeholder="e.g. Check-in after 3:00 PM" /></label>
-        </div>
-
-        <div id="carFields" class="detail-fields" hidden>
-          <label>Rental company<input id="carCompany" placeholder="e.g. Enterprise" /></label>
-          <label>Pickup location<input id="carPickup" placeholder="Airport or address" /></label>
-          <label>Drop-off location<input id="carDropoff" placeholder="Airport or address" /></label>
-          <label>Confirmation number<input id="carConfirmation" placeholder="Optional" /></label>
-        </div>
-
-        <div id="restaurantFields" class="detail-fields" hidden>
-          <label>Restaurant name<input id="restaurantName" placeholder="Restaurant name" /></label>
-          <label>Address<input id="restaurantAddress" placeholder="Address" /></label>
-          <label>Reservation details<input id="restaurantReservation" placeholder="Confirmation, party size, etc." /></label>
-        </div>
-
+        <div id="flightFields" class="detail-fields" hidden><label>Airline<input id="flightAirline" placeholder="e.g. United Airlines" /></label><label>Flight number<input id="flightNumber" placeholder="e.g. UA 123" /></label><label>Departure airport<input id="flightFrom" placeholder="e.g. EWR — Newark Liberty" /></label><label>Arrival airport<input id="flightTo" placeholder="e.g. YUL — Montréal-Trudeau" /></label><label>Confirmation number<input id="flightConfirmation" placeholder="Optional" /></label></div>
+        <div id="airportFields" class="detail-fields" hidden><label>Airport name<input id="airportName" placeholder="e.g. Newark Liberty International Airport" /></label><label>Airport code<input id="airportCode" placeholder="e.g. EWR" maxlength="5" /></label><label>Terminal / gate<input id="airportTerminal" placeholder="e.g. Terminal A, Gate 22" /></label></div>
+        <div id="hotelFields" class="detail-fields" hidden><label>Hotel name<input id="hotelName" placeholder="Hotel name" /></label><label>Address<input id="hotelAddress" placeholder="Street address" /></label><label>Confirmation number<input id="hotelConfirmation" placeholder="Optional" /></label><label>Check-in details<input id="hotelCheckin" placeholder="e.g. Check-in after 3:00 PM" /></label></div>
+        <div id="carFields" class="detail-fields" hidden><label>Rental company<input id="carCompany" placeholder="e.g. Enterprise" /></label><label>Pickup location<input id="carPickup" placeholder="Airport or address" /></label><label>Drop-off location<input id="carDropoff" placeholder="Airport or address" /></label><label>Confirmation number<input id="carConfirmation" placeholder="Optional" /></label></div>
+        <div id="restaurantFields" class="detail-fields" hidden><label>Restaurant name<input id="restaurantName" placeholder="Restaurant name" /></label><label>Address<input id="restaurantAddress" placeholder="Address" /></label><label>Reservation details<input id="restaurantReservation" placeholder="Confirmation, party size, etc." /></label></div>
         <label>Notes<textarea id="activityNotes" maxlength="500" placeholder="Optional details, reminders, links, baggage info, parking, etc."></textarea></label>
         <button class="button button-primary" type="submit">Add to itinerary</button>
       </form>
@@ -140,6 +77,8 @@
     <a href="./index.html#friends"><svg viewBox="0 0 24 24"><path d="M8 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm8-1a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 21v-2c0-4 2.7-6 6-6s6 2 6 6v2H2Z"/></svg><small>Friends</small></a>
   </nav>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script src="./planner.js?v=20260909-shareedit1"></script>
+  <script src="./hilton-map.js?v=20260916-hilton1"></script>
 </body>
 </html>
