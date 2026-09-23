@@ -642,6 +642,14 @@ body.planner-page-open #plannerPage{display:block!important}
 .planner-heading-actions{display:flex;flex:0 0 auto;gap:9px;align-items:center}
 .edit-dates-form{display:grid;gap:14px;margin:14px 0;padding:16px;border:1px solid var(--line);border-radius:18px;background:#fff;box-shadow:0 4px 16px rgba(15,23,42,.04)}
 .edit-dates-form[hidden]{display:none!important}
+.day-heading-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.day-move-button{border:1px solid var(--line);background:#fff;color:var(--teal-dark);border-radius:9px;padding:8px 10px;font:inherit;font-weight:700;cursor:pointer}
+.day-move-button:hover,.day-move-button:focus-visible{border-color:var(--teal)}
+.move-day-form{display:grid;gap:10px;margin:10px 0 14px;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.move-day-form label{display:grid;gap:5px;max-width:300px;font-weight:700}
+.move-day-form input{width:100%;box-sizing:border-box;font-size:16px}
+.move-day-form>div{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.move-day-form .form-note{margin:0}
 .edit-dates-heading strong,.edit-dates-heading small{display:block}
 .edit-dates-heading small{margin-top:4px;color:#667085;line-height:1.4}
 .edit-dates-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
