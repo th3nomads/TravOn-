@@ -29,6 +29,7 @@ let lookupTimer = null;
 let editingActivityId = null;
 let lastTappedActivityId = null;
 let lastTappedActivityAt = 0;
+let movingDayDate = null;
 
 async function api(path, options = {}) {
   const response = await fetch(path, {
@@ -219,8 +220,12 @@ function renderPlanner() {
           <span class="day-number">Day ${index+1}</span>
           <h3>${formatDate(date,{weekday:"long",month:"long",day:"numeric"})}</h3>
         </div>
-        <span class="day-add-hint">${trip.access === "shared" ? "View only" : (activeDate === date && !editingActivityId ? "Adding here" : "Tap to add +")}</span>
+        <div class="day-heading-actions">
+          ${trip.access === "shared" ? "" : `<button type="button" class="day-move-button" data-move-day="${date}" aria-label="Move activities from ${formatDate(date)}">Move day</button>`}
+          <span class="day-add-hint">${trip.access === "shared" ? "View only" : (activeDate === date && !editingActivityId ? "Adding here" : "Tap to add +")}</span>
+        </div>
       </div>
+      ${movingDayDate === date ? `<form class="move-day-form" data-move-form="${date}"><label>Move this day's activities to<input type="date" name="newDate" value="${date}" required></label><div><button class="button button-primary" type="submit">Move activities</button><button class="text-button" type="button" data-cancel-move>Cancel</button></div><p class="form-note" aria-live="polite"></p></form>` : ""}
       <div class="activity-list">
         ${activities.length ? activities.map(activity => `
           <div class="activity${String(editingActivityId) === String(activity.id) ? " editing" : ""}" data-activity-id="${activity.id}" title="Double tap to edit">
@@ -236,7 +241,7 @@ function renderPlanner() {
 
     day.addEventListener("click", event => {
       if (trip.access === "shared") return;
-      if (event.target.closest("[data-delete], [data-activity-id]")) return;
+      if (event.target.closest("[data-delete], [data-activity-id], [data-move-day], .move-day-form")) return;
       editingActivityId = null;
       activeDate = date;
       activityForm.hidden = false;
@@ -244,6 +249,47 @@ function renderPlanner() {
       resetFormForDate();
       renderPlanner();
       requestAnimationFrame(() => activityForm.scrollIntoView({behavior:"smooth",block:"start"}));
+    });
+
+    day.querySelector("[data-move-day]")?.addEventListener("click", event => {
+      event.stopPropagation();
+      movingDayDate = date;
+      renderPlanner();
+      plannerDays.querySelector(".move-day-form input")?.focus();
+    });
+    day.querySelector("[data-cancel-move]")?.addEventListener("click", event => {
+      event.stopPropagation();
+      movingDayDate = null;
+      renderPlanner();
+    });
+    day.querySelector(".move-day-form")?.addEventListener("submit", async event => {
+      event.preventDefault();
+      event.stopPropagation();
+      const form = event.currentTarget;
+      const destination = form.elements.newDate.value;
+      const message = form.querySelector(".form-note");
+      if (!destination || destination === date) { movingDayDate = null; renderPlanner(); return; }
+      const moved = (trip.activities || []).filter(activity => activity.date === date);
+      if (!moved.length) { message.textContent = "This day has no activities to move."; return; }
+      const startDate = destination < trip.startDate ? destination : trip.startDate;
+      const endDate = destination > trip.endDate ? destination : trip.endDate;
+      const updatedActivities = trip.activities.map(activity => activity.date === date ? {...activity, date:destination} : activity);
+      const submit = form.querySelector('[type="submit"]');
+      submit.disabled = true;
+      message.textContent = "Saving…";
+      try {
+        await persistTripDates(startDate, endDate, updatedActivities);
+        trip.startDate = startDate;
+        trip.endDate = endDate;
+        trip.activities = updatedActivities;
+        if (activeDate === date) activeDate = destination;
+        movingDayDate = null;
+        if (!activityForm.hidden && activeDate === destination) selectedDayLabel.textContent = formatDate(destination,{weekday:"long",month:"long",day:"numeric"});
+        renderPlanner();
+      } catch (error) {
+        message.textContent = error.message;
+        submit.disabled = false;
+      }
     });
 
     day.querySelectorAll("[data-activity-id]").forEach(card => {
@@ -369,6 +415,18 @@ async function saveTrip() {
   }
 }
 
+async function persistTripDates(startDate, endDate, activities) {
+  if (currentUser) {
+    await api("/api/trips", {method:"PUT", body:JSON.stringify({id:trip.id, startDate, endDate, activities})});
+  } else {
+    const trips = JSON.parse(localStorage.getItem("travon.trips.v2") || "[]");
+    const index = trips.findIndex(item => String(item.id) === String(trip.id));
+    if (index < 0) throw new Error("Itinerary not found. Reload and try again.");
+    trips[index] = {...trips[index], startDate, endDate, activities};
+    localStorage.setItem("travon.trips.v2", JSON.stringify(trips));
+  }
+}
+
 function openDateEditor() {
   if (!trip || trip.access === "shared") return;
   editStartDate.value = trip.startDate;
@@ -410,14 +468,7 @@ editDatesForm?.addEventListener("submit", async event => {
   saveDatesButton.disabled = true;
   editDatesMessage.textContent = "Saving…";
   try {
-    if (currentUser) {
-      await api("/api/trips", { method:"PUT", body:JSON.stringify({ id:trip.id, startDate, endDate, activities:keptActivities }) });
-    } else {
-      const trips = JSON.parse(localStorage.getItem("travon.trips.v2") || "[]");
-      const index = trips.findIndex(item => String(item.id) === String(trip.id));
-      if (index >= 0) trips[index] = { ...trips[index], startDate, endDate, activities:keptActivities };
-      localStorage.setItem("travon.trips.v2", JSON.stringify(trips));
-    }
+    await persistTripDates(startDate, endDate, keptActivities);
     trip.startDate = startDate;
     trip.endDate = endDate;
     trip.activities = keptActivities;
