@@ -79,14 +79,21 @@ export async function onRequestPut({ request, env }) {
   const activities = Array.isArray(body?.activities) ? body.activities : [];
 
   const existing = await env.DB.prepare(
-    "SELECT id FROM trips WHERE id = ? AND user_id = ?"
+    "SELECT id, start_date, end_date FROM trips WHERE id = ? AND user_id = ?"
   ).bind(id, auth.user.id).first();
 
   if (!existing) return json({ error: "Trip not found." }, 404);
 
+  const startDate = body?.startDate === undefined ? existing.start_date : String(body.startDate);
+  const endDate = body?.endDate === undefined ? existing.end_date : String(body.endDate);
+  const validDate = value => /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value)) && new Date(value + "T12:00:00Z").toISOString().slice(0, 10) === value;
+  if (!validDate(startDate) || !validDate(endDate) || endDate < startDate || activities.some(activity => !validDate(activity.date) || activity.date < startDate || activity.date > endDate)) {
+    return json({ error: "Choose valid trip dates that include all activities." }, 400);
+  }
+
   await env.DB.prepare(
-    "UPDATE trips SET activities_json = ?, updated_at = datetime('now') WHERE id = ? AND user_id = ?"
-  ).bind(JSON.stringify(activities), id, auth.user.id).run();
+    "UPDATE trips SET start_date = ?, end_date = ?, activities_json = ?, updated_at = datetime('now') WHERE id = ? AND user_id = ?"
+  ).bind(startDate, endDate, JSON.stringify(activities), id, auth.user.id).run();
 
   return json({ ok: true });
 }
