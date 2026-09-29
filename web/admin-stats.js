@@ -29,7 +29,6 @@
 
   function openUserPanel() {
     closeUserPanel();
-
     const overlay = document.createElement("div");
     overlay.id = "travonAdminUsersOverlay";
     overlay.style.position = "fixed";
@@ -78,7 +77,6 @@
     close.addEventListener("click", closeUserPanel);
 
     header.append(heading, close);
-
     const list = document.createElement("div");
     list.style.overflowY = "auto";
     list.style.padding = "8px 20px 20px";
@@ -90,25 +88,21 @@
         const row = document.createElement("div");
         row.style.padding = "14px 0";
         row.style.borderBottom = index === adminUsers.length - 1 ? "0" : "1px solid #eef1f3";
-
         const name = document.createElement("strong");
         name.textContent = user.name || "Unnamed user";
         name.style.display = "block";
         name.style.fontSize = "15px";
-
         const email = document.createElement("div");
         email.textContent = user.email || "No email";
         email.style.marginTop = "3px";
         email.style.color = "#475467";
         email.style.fontSize = "14px";
         email.style.overflowWrap = "anywhere";
-
         const date = document.createElement("div");
         date.textContent = formatSignupDate(user.createdAt);
         date.style.marginTop = "5px";
         date.style.color = "#98a2b3";
         date.style.fontSize = "12px";
-
         row.append(name, email, date);
         list.appendChild(row);
       });
@@ -116,44 +110,26 @@
 
     panel.append(header, list);
     overlay.appendChild(panel);
-    overlay.addEventListener("click", (event) => {
-      if (event.target === overlay) closeUserPanel();
-    });
+    overlay.addEventListener("click", (event) => { if (event.target === overlay) closeUserPanel(); });
     document.body.appendChild(overlay);
   }
 
   function loggedOutTripState() {
     const tripGrid = document.querySelector("#tripGrid");
-    setLoggedOutGrid(
-      tripGrid,
-      '<div class="empty-state"><h3>Log in to view your trips</h3><p>Your saved and shared Itineraries will appear here after you sign in.</p></div>',
-      "trips"
-    );
-
+    setLoggedOutGrid(tripGrid, '<div class="empty-state"><h3>Log in to view your trips</h3><p>Your saved and shared Itineraries will appear here after you sign in.</p></div>', "trips");
     const friendsGrid = document.querySelector("#friendsGrid");
-    setLoggedOutGrid(
-      friendsGrid,
-      '<div class="empty-state"><div class="empty-icon">👥</div><h3>Log in to see shared trips</h3><p>Your TravOn friends and shared Itineraries will appear here after you sign in.</p></div>',
-      "friends"
-    );
-
+    setLoggedOutGrid(friendsGrid, '<div class="empty-state"><div class="empty-icon">👥</div><h3>Log in to see shared trips</h3><p>Your TravOn friends and shared Itineraries will appear here after you sign in.</p></div>', "friends");
     const plannerPage = document.querySelector("#plannerPage");
     if (plannerPage) plannerPage.hidden = true;
-
     document.querySelector("#adminUserCount")?.remove();
     closeUserPanel();
   }
 
-  function enforceLoggedOutPrivacy() {
-    if (signedIn === false) loggedOutTripState();
-  }
+  function enforceLoggedOutPrivacy() { if (signedIn === false) loggedOutTripState(); }
 
   function requireAccountForTripCreation() {
     const createAccountButton = document.querySelector("#signupButton");
-    if (createAccountButton?.dataset?.action === "signup") {
-      createAccountButton.click();
-      return;
-    }
+    if (createAccountButton?.dataset?.action === "signup") { createAccountButton.click(); return; }
     document.querySelector("#heroSignupButton")?.click();
   }
 
@@ -165,7 +141,6 @@
       event.stopImmediatePropagation();
       requireAccountForTripCreation();
     }, true);
-
     document.addEventListener("submit", (event) => {
       if (event.target?.id !== "tripForm" || signedIn === true) return;
       event.preventDefault();
@@ -183,9 +158,7 @@
       if (signedIn) {
         clearLoggedOutMarker(document.querySelector("#tripGrid"));
         clearLoggedOutMarker(document.querySelector("#friendsGrid"));
-      } else {
-        enforceLoggedOutPrivacy();
-      }
+      } else enforceLoggedOutPrivacy();
     } catch {
       signedIn = false;
       enforceLoggedOutPrivacy();
@@ -200,10 +173,8 @@
       const totalUsers = Number(data?.totalUsers);
       if (!Number.isFinite(totalUsers)) return;
       adminUsers = Array.isArray(data?.users) ? data.users : [];
-
       const greeting = document.querySelector("#loggedInGreeting");
       if (!greeting) return;
-
       let badge = document.querySelector("#adminUserCount");
       if (!badge) {
         badge = document.createElement("button");
@@ -231,7 +202,6 @@
   function watchLogoutState() {
     const signupButton = document.querySelector("#signupButton");
     const heroLoginButton = document.querySelector("#heroLoginButton");
-
     const evaluate = () => {
       const desktopAction = signupButton?.dataset?.action;
       const heroAction = heroLoginButton?.dataset?.action;
@@ -246,20 +216,15 @@
         loggedOutTripState();
       }
     };
-
     const observer = new MutationObserver(evaluate);
     if (signupButton) observer.observe(signupButton, { attributes: true, attributeFilter: ["data-action"] });
     if (heroLoginButton) observer.observe(heroLoginButton, { attributes: true, attributeFilter: ["data-action"] });
     evaluate();
-
     const tripGrid = document.querySelector("#tripGrid");
-    if (tripGrid) {
-      new MutationObserver(() => {
-        if (signedIn !== false) return;
-        if (tripGrid.dataset.loggedOutState === "trips") return;
-        enforceLoggedOutPrivacy();
-      }).observe(tripGrid, { childList: true });
-    }
+    if (tripGrid) new MutationObserver(() => {
+      if (signedIn !== false || tripGrid.dataset.loggedOutState === "trips") return;
+      enforceLoggedOutPrivacy();
+    }).observe(tripGrid, { childList: true });
   }
 
   async function init() {
@@ -269,9 +234,95 @@
     if (signedIn) await loadAdminStats();
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init, { once: true });
-  } else {
-    init();
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
+  else init();
+})();
+
+(() => {
+  if (window.__travonRemoveAccessLoaded) return;
+  window.__travonRemoveAccessLoaded = true;
+  let shares = [];
+  let decorating = false;
+
+  async function fetchShares() {
+    try {
+      const response = await fetch("/api/shares", { credentials: "same-origin" });
+      if (!response.ok) return;
+      const data = await response.json();
+      shares = Array.isArray(data?.shares) ? data.shares : [];
+      decorate();
+    } catch {}
   }
+
+  function makeButton(share) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = "Remove Access";
+    button.dataset.removeShareId = share.id;
+    button.style.marginTop = "8px";
+    button.style.padding = "7px 11px";
+    button.style.border = "1px solid #dc3545";
+    button.style.borderRadius = "10px";
+    button.style.background = "#fff";
+    button.style.color = "#b42318";
+    button.style.fontSize = "12px";
+    button.style.fontWeight = "800";
+    button.style.cursor = "pointer";
+    button.addEventListener("click", async () => {
+      const person = share.name || share.email || "this person";
+      if (!confirm(`Remove ${person}'s access to “${share.tripTitle}”? They will no longer be able to view or edit this Itinerary.`)) return;
+      button.disabled = true;
+      button.textContent = "Removing…";
+      try {
+        const response = await fetch("/api/shares", {
+          method: "DELETE",
+          credentials: "same-origin",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ shareId: share.id })
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || "Could not remove access.");
+        shares = shares.filter(item => item.id !== share.id);
+        if (typeof window.loadFriends === "function") await window.loadFriends();
+        else window.location.reload();
+      } catch (error) {
+        alert(error.message || "Could not remove access.");
+        button.disabled = false;
+        button.textContent = "Remove Access";
+      }
+    });
+    return button;
+  }
+
+  function decorate() {
+    if (decorating) return;
+    decorating = true;
+    try {
+      const outgoing = shares.filter(share => share.direction === "outgoing");
+      document.querySelectorAll("#friendsGrid .friend-card").forEach(card => {
+        const personName = card.querySelector("h3")?.textContent?.trim() || "";
+        card.querySelectorAll(".friend-trip").forEach(row => {
+          if (row.querySelector("[data-remove-share-id]")) return;
+          const title = row.querySelector("strong")?.textContent?.trim() || "";
+          const share = outgoing.find(item => (item.name || "TravOn friend") === personName && item.tripTitle === title);
+          if (share) row.appendChild(makeButton(share));
+        });
+      });
+    } finally {
+      decorating = false;
+    }
+  }
+
+  function initRemoveAccess() {
+    const grid = document.querySelector("#friendsGrid");
+    if (!grid) return;
+    new MutationObserver(() => decorate()).observe(grid, { childList: true, subtree: true });
+    fetchShares();
+    document.addEventListener("click", (event) => {
+      if (event.target.closest?.('a[href="#friends"]')) setTimeout(fetchShares, 50);
+    });
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initRemoveAccess, { once: true });
+  else initRemoveAccess();
 })();
