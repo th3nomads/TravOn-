@@ -217,6 +217,7 @@ async function loadTripsFromServer() {
   let serverTrips = data.trips || [];
   serverTrips = await recoverLocalTrips(serverTrips);
   trips = serverTrips;
+  trips.forEach(trip => TravonHotelHistory.remember(trip.id, trip.activities));
   renderTrips();
   renderFriends([]);
 }
@@ -331,11 +332,12 @@ const splitzExpenses = document.querySelector("#splitzExpenses");
 
 
 async function saveTrips() {
+  const trip = trips.find(t => t.id === activeTripId);
+  if (trip) TravonHotelHistory.remember(trip.id, trip.activities);
   if (!currentUser) {
     localStorage.setItem("travon.trips.v2", JSON.stringify(trips));
     return;
   }
-  const trip = trips.find(t => t.id === activeTripId);
   if (!trip) return;
   try {
     await api("/api/trips", {
@@ -632,13 +634,14 @@ function resetActivityLookup() {
 async function searchActivities(query) {
   const q = String(query || "").trim();
   if (q.length < 2) { activityLookupResults.hidden = true; activityLookupResults.innerHTML = ""; return; }
+  const savedHotels = activityType.value === "hotel" ? TravonHotelHistory.matches(activeTripId, q) : [];
   activityLookupResults.hidden = false;
   activityLookupResults.innerHTML = '<div class="lookup-status">Searching…</div>';
   try {
     const trip = trips.find(t => t.id === activeTripId);
     const context = trip?.title || "";
     const data = await api("/api/activity-search?q=" + encodeURIComponent(q) + "&type=" + encodeURIComponent(activityType.value) + "&context=" + encodeURIComponent(context), { method:"GET", headers:{} });
-    const results = Array.isArray(data.results) ? data.results : [];
+    const results = TravonHotelHistory.merge(savedHotels, Array.isArray(data.results) ? data.results : []);
     if (!results.length) { activityLookupResults.innerHTML = '<div class="lookup-status">No matches found. You can still type it manually below.</div>'; return; }
     activityLookupResults.innerHTML = results.map((result,index) =>
       '<button type="button" class="lookup-result" data-lookup-index="' + index + '">' +
@@ -667,7 +670,16 @@ async function searchActivities(query) {
       activityLookup.blur();
     }));
   } catch (error) {
-    activityLookupResults.innerHTML = '<div class="lookup-status">' + escapeHtml(error.message || "Lookup is unavailable right now.") + ' You can still type the details manually.</div>';
+    if (savedHotels.length) {
+      activityLookupResults.innerHTML = savedHotels.map((hotel, index) => '<button type="button" class="lookup-result" data-lookup-index="' + index + '"><span class="lookup-placeholder">⌖</span><span><strong>' + escapeHtml(hotel.title) + '</strong><small>' + escapeHtml(hotel.address) + '</small></span></button>').join("");
+      activityLookupResults.querySelectorAll("[data-lookup-index]").forEach(button => button.addEventListener("click", () => {
+        const hotel = savedHotels[Number(button.dataset.lookupIndex)];
+        document.querySelector("#activityTitle").value = hotel.title;
+        document.querySelector("#hotelName").value = hotel.title;
+        document.querySelector("#hotelAddress").value = hotel.address;
+        resetActivityLookup();
+      }));
+    } else activityLookupResults.innerHTML = '<div class="lookup-status">' + escapeHtml(error.message || "Lookup is unavailable right now.") + ' You can still type the details manually.</div>';
   }
 }
 
@@ -736,6 +748,7 @@ function renderPlanner() {
   plannerDays.querySelectorAll("[data-delete-activity]").forEach(button => {
     button.addEventListener("click", async (event) => {
       event.stopPropagation();
+      TravonHotelHistory.remember(trip.id, (trip.activities || []).filter(a => a.id === button.dataset.deleteActivity));
       trip.activities = (trip.activities || []).filter(a => a.id !== button.dataset.deleteActivity);
       resetActivityLookup();
       await saveTrips();
